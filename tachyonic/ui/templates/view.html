@@ -1,0 +1,56 @@
+{% if save_url %}
+<form enctype='multipart/form-data' method="post" novalidate role="form" data-url="{{ save_url }}" data-name="{{ title }}" data-save="true">
+{% elif created_url %}
+<form enctype='multipart/form-data' method="post" novalidate role="form" data-url="{{ created_url }}" data-name="{{ title }}">
+{% elif view_form %}
+<form enctype='multipart/form-data' method="post" novalidate role="form" disabled onsubmit='return false;'>
+{% endif %}
+{{ content }}
+{% if view_form %}
+</form>
+{% endif %}
+<div style="width:100%;clear:both;">
+{% if create_url %}
+<button class="btn btn-primary" data-url="{{ create_url }}" data-name="{{ title }}">Create</button>
+{% endif %}
+{% if save_url %}
+<input type="submit" class="btn btn-primary" value="Save">
+{% endif %}
+{% if created_url %}
+<input type="submit" class="btn btn-primary" value="Create">
+{% endif %}
+{% if edit_url %}
+<button class="btn btn-warning" data-url="{{ edit_url }}" data-name="{{ title }}">Edit</button>
+{% endif %}
+{% if delete_url %}
+<button class="btn btn-danger" data-url="{{ delete_url }}" data-name="{{ title }}" data-confirm="{{ confirm }}">Delete</button>
+{% endif %}
+{% if cancel_url %}
+<button class="btn btn-default" data-url="{{ cancel_url }}" data-name="{{ title }}">Cancel</button>
+{% endif %}
+{% if back_url %}
+<button class="btn btn-default" data-url="{{ back_url }}" data-name="{{ title }}">Back</button>
+{% endif %}
+<button id="window_close" class="btn btn-default" style="display: none;" onclick="close_window()">Close</button>
+{% if save_url %}
+</form>
+{% elif created_url %}
+</div>
+</form>
+{% endif %}
+<script>
+    $( document ).ready(function() {   
+    var display = document.getElementById('window').style.display;
+    if (display == 'block') {
+        document.getElementById('window_close').style.display = 'inline';
+    }
+	{% if title %}
+   	title("{{ title }}");
+	{% endif %}
+    });
+</script>
+{% if extra %}
+{{ extra }}
+{% endif %}
+{% include 'tachyonic.ui/error.html' %}
+

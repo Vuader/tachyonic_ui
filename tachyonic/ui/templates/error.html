@@ -1,0 +1,7 @@
+{% if error|length > 0 %}
+<script>
+{% for e in error %}
+warning('<B>{{e}}</B> ({{REQUEST_ID}})');
+{% endfor %}
+</script>
+{% endif %}
