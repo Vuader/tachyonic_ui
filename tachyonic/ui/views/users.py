@@ -5,9 +5,10 @@ import logging
 from collections import OrderedDict
 
 from tachyonic import app
+from tachyonic import router
 from tachyonic.neutrino import constants as const
 from tachyonic.neutrino import exceptions
-from tachyonic.common.client import Client
+from tachyonic.client import Client
 
 from tachyonic.ui.views import ui
 from tachyonic.ui.views.datatable import datatable
@@ -20,36 +21,36 @@ menu.admin.add('/Accounts/Users','/users','users:view')
 
 @app.resources()
 class User(object):
-    def __init__(self, app):
+    def __init__(self):
         # VIEW USERS
-        app.router.add(const.HTTP_GET,
-                       '/users',
-                       self.view,
-                       'users:view')
-        app.router.add(const.HTTP_GET,
-                       '/users/view/{user_id}',
-                       self.view,
-                       'users:view')
+        router.add(const.HTTP_GET,
+                   '/users',
+                   self.view,
+                   'users:view')
+        router.add(const.HTTP_GET,
+                   '/users/view/{user_id}',
+                   self.view,
+                   'users:view')
         # ADD NEW USERS
-        app.router.add(const.HTTP_GET,
-                       '/users/create',
-                       self.create,
-                       'users:admin')
-        app.router.add(const.HTTP_POST,
-                       '/users/create',
-                       self.create,
-                       'users:admin')
+        router.add(const.HTTP_GET,
+                   '/users/create',
+                   self.create,
+                   'users:admin')
+        router.add(const.HTTP_POST,
+                   '/users/create',
+                   self.create,
+                   'users:admin')
         # EDIT USERS
-        app.router.add(const.HTTP_GET,
-                       '/users/edit/{user_id}', self.edit,
-                       'users:admin')
-        app.router.add(const.HTTP_POST,
-                       '/users/edit/{user_id}', self.edit,
-                       'users:admin')
+        router.add(const.HTTP_GET,
+                   '/users/edit/{user_id}', self.edit,
+                   'users:admin')
+        router.add(const.HTTP_POST,
+                   '/users/edit/{user_id}', self.edit,
+                   'users:admin')
         # DELETE USERS
-        app.router.add(const.HTTP_GET,
-                       '/users/delete/{user_id}', self.delete,
-                       'users:admin')
+        router.add(const.HTTP_GET,
+                   '/users/delete/{user_id}', self.delete,
+                   'users:admin')
 
     def view(self, req, resp, user_id=None):
         if user_id is None:
@@ -58,12 +59,12 @@ class User(object):
             fields['email'] = 'Email'
             fields['name'] = 'Fullname'
             fields['employer'] = 'Employer'
-            dt = datatable(req, 'users', '/users',
+            dt = datatable(req, 'users', '/v1/users',
                            fields, view_button=True, service=False)
             ui.view(req, resp, content=dt, title='Users')
         else:
             api = Client(req.context['restapi'])
-            headers, response = api.execute(const.HTTP_GET, "/users/%s" % (user_id,))
+            headers, response = api.execute(const.HTTP_GET, "/v1/user/%s" % (user_id,))
             form = UserModel(response, validate=False, readonly=True, cols=2)
             ui.view(req, resp, content=form, id=user_id, title='View User',
                     view_form=True)
@@ -72,11 +73,11 @@ class User(object):
         if req.method == const.HTTP_POST:
             form = UserModel(req.post, validate=True, readonly=True, cols=2)
             api = Client(req.context['restapi'])
-            headers, response = api.execute(const.HTTP_PUT, "/users/%s" %
+            headers, response = api.execute(const.HTTP_PUT, "/v1/user/%s" %
                                             (user_id,), form)
         else:
             api = Client(req.context['restapi'])
-            headers, response = api.execute(const.HTTP_GET, "/users/%s" % (user_id,))
+            headers, response = api.execute(const.HTTP_GET, "/v1/user/%s" % (user_id,))
             form = UserModel(response, validate=False, cols=2)
             ui.edit(req, resp, content=form, id=user_id, title='Edit User')
 
@@ -85,7 +86,7 @@ class User(object):
             try:
                 form = UserModel(req.post, validate=True, cols=2)
                 api = Client(req.context['restapi'])
-                headers, response = api.execute(const.HTTP_POST, "/users", form)
+                headers, response = api.execute(const.HTTP_POST, "/v1/user", form)
                 if 'id' in response:
                     id = response['id']
                     self.view(req, resp, user_id=id)
@@ -98,5 +99,5 @@ class User(object):
 
     def delete(self, req, resp, user_id=None):
         api = Client(req.context['restapi'])
-        headers, response = api.execute(const.HTTP_DELETE, "/users/%s" % (user_id,))
+        headers, response = api.execute(const.HTTP_DELETE, "/v1/user/%s" % (user_id,))
         self.view(req, resp)

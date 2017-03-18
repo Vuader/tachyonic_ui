@@ -5,9 +5,10 @@ import logging
 import json
 
 from tachyonic import app
+from tachyonic import router
 from tachyonic.neutrino.web.dom import Dom
 from tachyonic.neutrino import constants as const
-from tachyonic.common.client import Client
+from tachyonic.client import Client
 
 from tachyonic.ui.views import ui
 
@@ -85,9 +86,9 @@ def datatable(req, table_id, url,
 
 @app.resources()
 class DataTables(object):
-    def __init__(self, app):
-        app.router.add(const.HTTP_GET, '/dt', self.dt, 'tachyonic:public')
-        app.router.add(const.HTTP_POST, '/dt', self.dt, 'tachyonic:public')
+    def __init__(self):
+        router.add(const.HTTP_GET, '/dt', self.dt, 'tachyonic:public')
+        router.add(const.HTTP_POST, '/dt', self.dt, 'tachyonic:public')
 
     def dt(self, req, resp):
         resp.headers['Content-Type'] = const.APPLICATION_JSON
