@@ -4,12 +4,13 @@ from __future__ import unicode_literals
 import logging
 import re
 
-import tachyonic.neutrino
-from tachyonic.neutrino import exceptions as nfw_exceptions
+from tachyonic import app
+from tachyonic import router
+from tachyonic import jinja
+from tachyonic.neutrino import exceptions as exceptions
 from tachyonic.neutrino import constants as const
-from tachyonic.neutrino import router
-import tachyonic.common
-from tachyonic.common.client import Client
+from tachyonic.client import Client
+from tachyonic.client.exceptions import ClientError
 
 from tachyonic.ui.auth import clear_session
 from tachyonic.ui.auth import authenticated
@@ -25,7 +26,7 @@ def resource(req):
 
 def route(req, route):
     route = route.strip('/')
-    return req.router._match(const.HTTP_GET, route)
+    return router._match(const.HTTP_GET, route)
 
 
 def view_access(req, subview):
@@ -47,12 +48,12 @@ def view(req, resp, **kwargs):
     if id is None:
         if view_access(req, '/create'):
             kwargs['create_url'] = "%s/%s/create" % (req.get_app(), res)
-        t = tachyonic.jinja.get_template('tachyonic.ui/view.html')
+        t = jinja.get_template('tachyonic.ui/view.html')
     else:
         if view_access(req, "/edit/%s" % (id,)):
             kwargs['edit_url'] = "%s/%s/edit/%s" % (req.get_app(), res, id)
         kwargs['back_url'] = "%s/%s" % (req.get_app(),res)
-        t = tachyonic.jinja.get_template('tachyonic.ui/view.html')
+        t = jinja.get_template('tachyonic.ui/view.html')
 
     resp.body = t.render(**kwargs)
 
@@ -65,7 +66,7 @@ def edit(req, resp, **kwargs):
     kwargs['save_url'] = "%s/%s/edit/%s" % (req.get_app(), res, id)
     kwargs['cancel_url'] = "%s/%s/view/%s" % (req.get_app(), res, id)
     kwargs['delete_url'] = "%s/%s/delete/%s" % (req.get_app(), res, id)
-    t = tachyonic.jinja.get_template('tachyonic.ui/view.html')
+    t = jinja.get_template('tachyonic.ui/view.html')
     resp.body = t.render(**kwargs)
 
 
@@ -73,18 +74,18 @@ def create(req, resp, id=None, **kwargs):
     res = resource(req)
     kwargs['created_url'] = "%s/%s/create" % (req.get_app(), res)
     kwargs['back_url'] = "%s/%s" % (req.get_app(), res)
-    t = tachyonic.jinja.get_template('tachyonic.ui/view.html')
+    t = jinja.get_template('tachyonic.ui/view.html')
     resp.body = t.render(**kwargs)
 
 
-@tachyonic.app.resources()
+@app.resources()
 class Tachyon(object):
-    def __init__(self, app):
-        app.router.add(const.HTTP_GET, '/', self.home, 'tachyonic:public')
-        app.router.add(const.HTTP_GET, '/login', self.login, 'tachyonic:public')
-        app.router.add(const.HTTP_POST, '/login', self.login, 'tachyonic:public')
-        app.router.add(const.HTTP_GET, '/logout', self.logout, 'tachyonic:public')
-        app.router.add(const.HTTP_GET, '/expired', self.expired, 'tachyonic:public')
+    def __init__(self):
+        router.add(const.HTTP_GET, '/', self.home, 'tachyonic:public')
+        router.add(const.HTTP_GET, '/login', self.login, 'tachyonic:public')
+        router.add(const.HTTP_POST, '/login', self.login, 'tachyonic:public')
+        router.add(const.HTTP_GET, '/logout', self.logout, 'tachyonic:public')
+        router.add(const.HTTP_GET, '/expired', self.expired, 'tachyonic:public')
 
     def logout(self, req, resp):
         clear_session(req)
@@ -94,11 +95,11 @@ class Tachyon(object):
     def expired(self, req, resp):
         clear_session(req)
         render_menus(req)
-        raise tachyonic.neutrino.HTTPBadRequest(title="Authentication", description="Token Expired")
+        raise exceptions.HTTPBadRequest(title="Authentication", description="Token Expired")
 
     def home(self, req, resp):
         if req.session.get('token') is not None:
-            t = tachyonic.jinja.get_template('tachyonic.ui/dashboard.html')
+            t = jinja.get_template('tachyonic.ui/dashboard.html')
             resp.body = t.render()
         else:
             router.view('/login', const.HTTP_POST, req, resp)
@@ -116,9 +117,9 @@ class Tachyon(object):
                 req.session['token'] = token
                 req.session['domain'] = domain
                 authenticated(req, auth)
-                tachyonic.jinja.request['DOMAINS'] = req.context['domains']
+                jinja.request['DOMAINS'] = req.context['domains']
                 render_menus(req)
-            except nfw_exceptions.RestClientError as e:
+            except ClientError as e:
                 if e.status == const.HTTP_500:
                     clear_session(req)
                     error.append("RESTAPI Server Internal Error")
@@ -131,7 +132,7 @@ class Tachyon(object):
             # resp.view('/', const.HTTP_GET)
             resp.redirect('/')
         else:
-            t = tachyonic.jinja.get_template('tachyonic.ui/login.html')
+            t = jinja.get_template('tachyonic.ui/login.html')
             resp.body = t.render(username=username,
                                  password=password,
                                  domain=domain,
