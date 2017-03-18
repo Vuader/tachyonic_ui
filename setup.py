@@ -209,6 +209,7 @@ setup_dict = dict(
     url=metadata.url,
     description=metadata.description,
     long_description=read('README.rst'),
+    include_package_data=True,
     namespace_packages = [
         'tachyonic'
         ],   
