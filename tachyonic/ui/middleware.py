@@ -4,11 +4,11 @@ from __future__ import unicode_literals
 import logging
 from collections import OrderedDict
 
-import tachyonic
-from tachyonic.neutrino import constants as const
-from tachyonic.common.client import Client
+from tachyonic import app
 from tachyonic import jinja
-from tachyonic.common import exceptions
+from tachyonic.neutrino import constants as const
+from tachyonic.client import Client
+from tachyonic.client import exceptions
 
 from tachyonic.ui.auth import clear_session
 from tachyonic.ui.auth import authenticated
@@ -19,24 +19,21 @@ log = logging.getLogger(__name__)
 
 
 class Globals(object):
-    def __init__(self, app):
+    def __init__(self):
         self.config = app.config
         self.ui_config = app.config.get('ui')
         self.app_config = self.config.get('application')
-        tachyonic.jinja.globals['TITLE'] = self.app_config.get('name','Tachyon')
-        tachyonic.jinja.globals['NAME'] = self.app_config.get('name')
+        jinja.globals['TITLE'] = self.app_config.get('name','Tachyon')
+        jinja.globals['NAME'] = self.app_config.get('name')
 
     def pre(self, req, resp):
-        tachyonic.jinja.globals['REQUEST_ID'] = req.request_id
-        tachyonic.jinja.globals[''] = self.app_config.get('name','Tachyon')
+        jinja.globals['REQUEST_ID'] = req.request_id
+        jinja.globals[''] = self.app_config.get('name','Tachyon')
         req.context['restapi'] = self.ui_config.get('restapi', '')
         resp.headers['Content-Type'] = const.TEXT_HTML
 
 
 class Auth(object):
-    def __init__(self, app):
-        pass
-
     def pre(self, req, resp):
         logout = req.query.get('logout')
 
@@ -44,7 +41,7 @@ class Auth(object):
         req.context['domain_admin'] = False
         req.context['roles'] = []
         req.context['domains'] = []
-        tachyonic.jinja.request['LOGIN'] = False
+        jinja.request['LOGIN'] = False
 
         if logout is not None:
             clear_session(req)
@@ -78,5 +75,5 @@ class Auth(object):
                 api_fields['name'] = "Name"
                 jinja.request['SEARCH'] = select(req, 'search', '/search', api_fields)
 
-        tachyonic.jinja.request['DOMAINS'] = req.context['domains']
+        jinja.request['DOMAINS'] = req.context['domains']
         render_menus(req)

@@ -6,6 +6,7 @@ import json
 import time
 
 from tachyonic import app
+from tachyonic import router
 
 log = logging.getLogger(__name__)
 from tachyonic.neutrino import constants as const
@@ -15,8 +16,8 @@ from tachyonic.neutrino.response import response_io_stream
 
 @app.resources()
 class Messaging(object):
-    def __init__(self, app):
-        app.router.add(const.HTTP_GET, '/messaging', self.get, 'tachyonic:public')
+    def __init__(self):
+        router.add(const.HTTP_GET, '/messaging', self.get, 'tachyonic:public')
 
     class Server(object):
         def __init__(self, req, resp):

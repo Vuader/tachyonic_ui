@@ -5,9 +5,10 @@ import logging
 from collections import OrderedDict
 
 from tachyonic import app
+from tachyonic import router
 from tachyonic.neutrino import constants as const
 from tachyonic.neutrino import exceptions
-from tachyonic.common.client import Client
+from tachyonic.client import Client
 
 from tachyonic.ui.views import ui
 from tachyonic.ui.views.datatable import datatable
@@ -20,48 +21,48 @@ menu.admin.add('/Accounts/Domains','/domains','domains:view')
 
 @app.resources()
 class Domains(object):
-    def __init__(self, app):
+    def __init__(self):
         # VIEW USERS
-        app.router.add(const.HTTP_GET,
-                       '/domains',
-                       self.view,
-                       'domains:view')
-        app.router.add(const.HTTP_GET,
-                       '/domains/view/{domain_id}',
-                       self.view,
-                       'domains:view')
+        router.add(const.HTTP_GET,
+                   '/domains',
+                   self.view,
+                   'domains:view')
+        router.add(const.HTTP_GET,
+                   '/domains/view/{domain_id}',
+                   self.view,
+                   'domains:view')
         # ADD NEW USERS
-        app.router.add(const.HTTP_GET,
-                       '/domains/create',
-                       self.create,
-                       'domains:admin')
-        app.router.add(const.HTTP_POST,
-                       '/domains/create',
-                       self.create,
-                       'domains:admin')
+        router.add(const.HTTP_GET,
+                   '/domains/create',
+                   self.create,
+                   'domains:admin')
+        router.add(const.HTTP_POST,
+                   '/domains/create',
+                   self.create,
+                   'domains:admin')
         # EDIT USERS
-        app.router.add(const.HTTP_GET,
-                       '/domains/edit/{domain_id}', self.edit,
-                       'domains:admin')
-        app.router.add(const.HTTP_POST,
-                       '/domains/edit/{domain_id}', self.edit,
-                       'domains:admin')
+        router.add(const.HTTP_GET,
+                   '/domains/edit/{domain_id}', self.edit,
+                   'domains:admin')
+        router.add(const.HTTP_POST,
+                   '/domains/edit/{domain_id}', self.edit,
+                   'domains:admin')
         # DELETE USERS
-        app.router.add(const.HTTP_GET,
-                       '/domains/delete/{domain_id}', self.delete,
-                       'domains:admin')
+        router.add(const.HTTP_GET,
+                   '/domains/delete/{domain_id}', self.delete,
+                   'domains:admin')
 
     def view(self, req, resp, domain_id=None):
         if domain_id is None:
             fields = OrderedDict()
             fields['name'] = 'Domain'
-            dt = datatable(req, 'domains', '/domains',
+            dt = datatable(req, 'domains', '/v1/domains',
                            fields, view_button=True, service=False)
             ui.view(req, resp, content=dt, title='Domains')
         else:
             api = Client(req.context['restapi'])
             headers, response = api.execute(const.HTTP_GET,
-                                            "/domains/%s" % (domain_id,))
+                                            "/v1/domain/%s" % (domain_id,))
             form = DomainModel(response, validate=False, readonly=True)
             ui.view(req, resp, content=form, id=domain_id, title='View Domain',
                     view_form=True)
@@ -70,11 +71,11 @@ class Domains(object):
         if req.method == const.HTTP_POST:
             form = DomainModel(req.post, validate=True, readonly=True)
             api = Client(req.context['restapi'])
-            headers, response = api.execute(const.HTTP_PUT, "/domains/%s" %
+            headers, response = api.execute(const.HTTP_PUT, "/v1/domain/%s" %
                                             (domain_id,), form)
         else:
             api = Client(req.context['restapi'])
-            headers, response = api.execute(const.HTTP_GET, "/domains/%s" %
+            headers, response = api.execute(const.HTTP_GET, "/v1/domain/%s" %
                                             (domain_id,))
             form = DomainModel(response, validate=False)
             ui.edit(req, resp, content=form, id=domain_id, title='Edit Domain')
@@ -84,7 +85,7 @@ class Domains(object):
             try:
                 form = DomainModel(req.post, validate=True)
                 api = Client(req.context['restapi'])
-                headers, response = api.execute(const.HTTP_POST, "/domains", form)
+                headers, response = api.execute(const.HTTP_POST, "/v1/domain", form)
                 if 'id' in response:
                     id = response['id']
                     self.view(req, resp, domain_id=id)
@@ -97,6 +98,6 @@ class Domains(object):
 
     def delete(self, req, resp, domain_id=None):
         api = Client(req.context['restapi'])
-        headers, response = api.execute(const.HTTP_DELETE, "/domains/%s" %
+        headers, response = api.execute(const.HTTP_DELETE, "/v1/domain/%s" %
                                         (domain_id,))
         self.view(req, resp)

@@ -5,6 +5,7 @@ import logging
 from collections import OrderedDict
 
 from tachyonic import app
+from tachyonic import router
 from tachyonic.neutrino import constants as const
 
 log = logging.getLogger(__name__)
@@ -12,7 +13,7 @@ log = logging.getLogger(__name__)
 
 @app.resources()
 class Themes(object):
-    def __init__(self, app):
+    def __init__(self):
         app_config = app.config.get('application')
         static = app_config.get('static', '').rstrip('/')
         images = "%s/tachyonic.ui/images" % (static,)
@@ -335,10 +336,13 @@ class Themes(object):
         self.css['footer']['z-index'] = '1010'
         self.css['footer']['width'] = '100%'
         self.css['footer:before'] = {}
-        self.css['footer:before']['content'] = '"Tachyon Framework - Copyright (c) 2016 to 2017, Christiaan Frans Rademan, Dave Kruger. All rights resevered. BSD3-Clause License"'
+        self.css['footer:before']['content'] = """
+        Tachyon Framework - Copyright (c) 2016 to 2017,
+        Christiaan Frans Rademan, Allan Swanepoel, Dave Kruger. All rights resevered. BSD3-Clause License
+        """
         self.css['footer:after'] = {}
         app.context['css'] = self.css
-        app.router.add(const.HTTP_GET, '/css', self.get, 'tachyonic:public')
+        router.add(const.HTTP_GET, '/css', self.get, 'tachyonic:public')
 
     def get(self, req, resp):
         resp.headers['Content-Type'] = const.TEXT_CSS

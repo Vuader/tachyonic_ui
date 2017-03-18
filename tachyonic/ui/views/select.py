@@ -5,9 +5,10 @@ import logging
 import json
 
 from tachyonic import app
+from tachyonic import router
 from tachyonic.neutrino.web.dom import Dom
 from tachyonic.neutrino import constants as const
-from tachyonic.common.client import Client
+from tachyonic.client import Client
 
 log = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ def select(req,
            input_field=None,
            click_url=None,
            service=False):
-    dom = Dom() 
+    dom = Dom()
 
     i = dom.create_element('input')
     i.set_attribute('id', field_id)
@@ -53,13 +54,13 @@ def select(req,
     s.append(js)
 
     return str(dom.get())
-    
+
 
 @app.resources()
 class Select(object):
-    def __init__(self, app):
-        app.router.add(const.HTTP_GET, '/select', self.select, 'tachyonic:public')
-        app.router.add(const.HTTP_POST, '/select', self.select, 'tachyonic:public')
+    def __init__(self):
+        router.add(const.HTTP_GET, '/select', self.select, 'tachyonic:public')
+        router.add(const.HTTP_POST, '/select', self.select, 'tachyonic:public')
 
     def select(self, req, resp):
         resp.headers['Content-Type'] = const.APPLICATION_JSON
