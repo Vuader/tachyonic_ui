@@ -46,6 +46,9 @@ class Search(object):
             dm = TenantModel(r, validate=False,
                              readonly=True, cols=2)
             title.append(dm['name'])
+            enter = title.create_element("a")
+            enter.set_attribute("class", "btn btn-warning")
+            enter.append("Open")
             ids.append('<B>Tenant ID</B> ')
             ids.append(dm['id'])
             ids.append(' <B>External ID</B> ')
