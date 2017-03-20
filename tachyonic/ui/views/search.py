@@ -33,12 +33,16 @@ class Search(object):
         request_headers = {}
         request_headers['X-Search'] = search
         dom = Dom()
+        searchfor = dom.create_element('div')
+        searchfor.append("Searching for %s" % (search,))
+
         response_headers, result = api.execute(const.HTTP_GET, '/v1/search',
                                                headers=request_headers)
         for r in result:
             item = dom.create_element('div')
+            item.set_attribute('class', 'search_result')
             title = item.create_element('div')
-            title.set_attribute('class','search_title')
+            title.set_attribute('class', 'search_title')
             ids = item.create_element('div')
             ids.set_attribute('class','ids')
             info = item.create_element('div')
@@ -47,7 +51,7 @@ class Search(object):
                              readonly=True, cols=2)
             title.append(dm['name'])
             enter = title.create_element("a")
-            enter.set_attribute("class", "btn btn-warning")
+            enter.set_attribute("class", "btn btn-space btn-xs btn-warning")
             enter.append("Open")
             ids.append('<B>Tenant ID</B> ')
             ids.append(dm['id'])
