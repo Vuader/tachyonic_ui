@@ -27,7 +27,6 @@ class Globals(object):
 
     def pre(self, req, resp):
         jinja.globals['REQUEST_ID'] = req.request_id
-        resp.headers['Content-Type'] = const.TEXT_HTML
 
 
 class Auth(Token):
@@ -38,7 +37,8 @@ class Auth(Token):
             clear_session(req)
 
 
-    def init(self, req):
+    def init(self, req, resp):
+        resp.headers['Content-Type'] = const.TEXT_HTML
         logout = req.query.get('logout')
         jinja.request['LOGIN'] = False
         jinja.request['USERNAME'] = req.context['username']

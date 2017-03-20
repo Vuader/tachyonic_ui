@@ -24,6 +24,9 @@ class Themes(object):
         self.css['body']['margin-left'] = '0px'
         self.css['body']['margin-right'] = '0px'
         self.css['body']['margin-top'] = '0px'
+        self.css['.btn-space'] = {}
+        self.css['.btn-space']['margin-left'] = '5px'
+        self.css['.btn-space']['margin-right'] = '5px'
         self.css['.modal-dialog'] = {}
         self.css['.modal-dialog']['width'] = '75%'
         self.css['button.view_button'] = {}
@@ -201,6 +204,8 @@ class Themes(object):
         self.css['div.info']['display'] = 'none'
         self.css['div.ids'] = {}
         self.css['div.ids']['color'] = '#006621'
+        self.css['div.search_result'] = {}
+        self.css['div.search_result']['padding-bottom'] = '10px'
         self.css['div.search_title'] = {}
         self.css['div.search_title']['color'] = ''
         self.css['div.search_title']['font-size'] = '18px'

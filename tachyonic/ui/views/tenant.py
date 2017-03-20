@@ -10,9 +10,11 @@ from tachyonic.neutrino.web.dom import Dom
 from tachyonic.client import Client
 
 from tachyonic.ui.models.tenants import Tenant as TenantModel
+from tachyonic.ui import menu
 
 log = logging.getLogger(__name__)
 
+menu.accounts.add('/View Acconunt','/tenant','tachyonic:login')
 
 @app.resources()
 class Tenant(object):
