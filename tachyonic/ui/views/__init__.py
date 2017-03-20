@@ -7,6 +7,8 @@ from . import users
 from . import roles
 from . import domains
 from . import tenants
+from . import tenant
+from . import search
 
 from .ui import resource
 from .ui import route

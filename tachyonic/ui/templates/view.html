@@ -40,13 +40,13 @@
 {% endif %}
 <script>
     $( document ).ready(function() {   
-    var display = document.getElementById('window').style.display;
-    if (display == 'block') {
-        document.getElementById('window_close').style.display = 'inline';
-    }
-	{% if title %}
-   	title("{{ title }}");
-	{% endif %}
+        var display = document.getElementById('window').style.display;
+        if (display == 'block') {
+            document.getElementById('window_close').style.display = 'inline';
+        }
+        {% if title %}
+        title("{{ title }}");
+        {% endif %}
     });
 </script>
 {% if extra %}

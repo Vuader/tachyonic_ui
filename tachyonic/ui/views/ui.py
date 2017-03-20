@@ -82,6 +82,7 @@ def create(req, resp, id=None, **kwargs):
 class Tachyon(object):
     def __init__(self):
         router.add(const.HTTP_GET, '/', self.home, 'tachyonic:public')
+        router.add(const.HTTP_POST, '/', self.home, 'tachyonic:public')
         router.add(const.HTTP_GET, '/login', self.login, 'tachyonic:public')
         router.add(const.HTTP_POST, '/login', self.login, 'tachyonic:public')
         router.add(const.HTTP_GET, '/logout', self.logout, 'tachyonic:public')

@@ -99,10 +99,12 @@ function toggle_window() {
     var display = document.getElementById('window').style.display;
     if (display == "none" || display == "")
     {
+        windowed = true;
         document.getElementById('window').style.display = "block";
     }   
     else
     {   
+        windowed = false;
         document.getElementById('window').style.display = "none";
     }   
 }
@@ -170,6 +172,7 @@ function close_window() {
     window_display = document.getElementById('window').style.display;
     if (window_display == "block") {
         $( "#window" ).toggle( "puff", 1000 );
+        windowed = false;
         document.getElementById('locked').style.display = "none";
     }
 }
@@ -181,6 +184,7 @@ function open_window() {
     window_display = document.getElementById('window').style.display;
     document.getElementById('locked').style.display = "block";
     if (window_display == "none" || window_display == "") {
+        windowed = true;
         $( document ).ready(function() {
             $( "#window" ).toggle( "clip", {}, 1000 );
         });
@@ -274,6 +278,7 @@ function link(element) {
                 if ("name" in element.dataset) {
                     document.getElementById('window_title').innerHTML = name;
                 }
+                windowed = true;
                 document.getElementById('window').style.display = "block";
             }   
         }
@@ -318,7 +323,8 @@ function admin(a) {
   */
 function title(title) {
     var display = document.getElementById('window').style.display;
-    if (display == "none" || display == "")
+    //if (display == "none" || display == "")
+    if (windowed == false)
     {
         document.getElementById('title').innerHTML = title;
     }

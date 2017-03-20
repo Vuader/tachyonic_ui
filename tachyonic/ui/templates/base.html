@@ -52,16 +52,19 @@
                 </ul>
                 </div>
                 {% if LOGIN %}
+                <form id="searchForm" class="navbar-form navbar-right" method="post" action="{{ SITE }}/search" onsubmit="link(this); return false;" data-url="{{SITE}}/search" data-name="Search Tenants">
+                    <div class="form-group">
+                        {{ SEARCH }}
+                    </div>
+                    <button type="submit" class="btn btn-success">Search</button>
+                </form>
                 <form class="navbar-form navbar-right" method="post" action="{{ SITE }}/">
                     <div class="form-group">
-                    <form method="post">
-                        {{ SEARCH }}
-                    </form>
-                    <select class="form-control">
-                        {% for d in DOMAINS %}
-                        <option value='{{ d }}'>{{ d }}</option>
-                        {% endfor %}
-                    </select>
+                        <select class="form-control" name="domain" onchange="this.form.submit()">
+                            {% for d in DOMAINS %}
+                            <option value='{{ d }}'>{{ d }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </form>
                 {% endif %}
@@ -69,15 +72,6 @@
         </div>
     </div>
 </nav>
-<div class="account">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-12">
-                {{ACCOUNT}}
-            </div>
-        </div>
-    </div>
-</div>
 <div class="push_top"></div>
 <div class="loading" id="loading"></div>
 <div class="locked" id="locked"></div>
@@ -121,30 +115,30 @@
     <div class="row">
         <div class="col-sm-3">
             {% if LOGIN %}
-            {% if MENU_ACCOUNTS %}
             <div class="block menu_accounts">
                 <div class="block_title">
-                    Accounts
+                    Tenant Account
                 </div>
                 <div class="block_content">
                     <ul class="nav nav-pills nav-stacked">
+                    {% if MENU_ACCOUNTS %}
                     {{ MENU_ACCOUNTS }}
+                    {% endif %}
                     </ul>
                 </div>
             </div>
-            {% endif %}
-            {% if MENU_SERVICES %}
             <div class="block menu_services">
                 <div class="block_title">
                     Services
                 </div>
                 <div class="block_content">
                     <ul class="nav nav-pills nav-stacked">
+                    {% if MENU_SERVICES %}
                     {{ MENU_SERVICES }}
+                    {% endif %}
                     </ul>
                 </div>
             </div>
-            {% endif %}
             <div class="block">
                 <div class="block_title">
                     Login
@@ -159,7 +153,7 @@
                         {{ EMAIL }}
                     </div>
                     <form method="get" action="{{ SITE }}/logout">
-                        <button type="submit" class="btn btn-success">Logout</button>
+                        <button type="submit" class="btn btn-danger">Logout</button>
                     </form>
                 </div>
             </div>
