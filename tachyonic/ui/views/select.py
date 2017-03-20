@@ -80,10 +80,10 @@ class Select(object):
 
     def select(self, req, resp):
         resp.headers['Content-Type'] = const.APPLICATION_JSON
-        url = req.query.get('api', [ '' ])
-        api_fields = req.query.get('fields', [ '' ])
+        url = req.query.getlist('api', [ '' ])
+        api_fields = req.query.getlist('fields', [ '' ])
         api_fields = api_fields[0].split(",")
-        #search = req.query.get('search', [ None ])
+        #search = req.query.getlist('search', [ None ])
         search = req.post.get('term',None)
         api = Client(req.context['restapi'])
         request_headers = {}

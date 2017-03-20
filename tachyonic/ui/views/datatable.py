@@ -92,15 +92,15 @@ class DataTables(object):
 
     def dt(self, req, resp):
         resp.headers['Content-Type'] = const.APPLICATION_JSON
-        url = req.query.get('api', [ '' ])
-        api_fields = req.query.get('fields', [ '' ])
+        url = req.query.getlist('api', [ '' ])
+        api_fields = req.query.getlist('fields', [ '' ])
         api_fields = api_fields[0].split(",")
-        draw = req.query.get('draw', [ 0 ])
-        start = req.query.get('start', [ 0 ])
-        length = req.query.get('length', [ 0 ])
-        search = req.query.get('search[value]', [ None ])
-        order = req.query.get("order[0][dir]")
-        column = req.query.get("order[0][column]")
+        draw = req.query.getlist('draw', [ 0 ])
+        start = req.query.getlist('start', [ 0 ])
+        length = req.query.getlist('length', [ 0 ])
+        search = req.query.getlist('search[value]', [ None ])
+        order = req.query.getlist("order[0][dir]")
+        column = req.query.getlist("order[0][column]")
         count = 0
         orderby = None
         if order is not None and column is not None:
