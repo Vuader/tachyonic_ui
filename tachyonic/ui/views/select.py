@@ -20,21 +20,37 @@ def select(req,
            css_class=None,
            input_field=None,
            click_url=None,
+           keywords_mode=False,
+           placeholder=None,
+           select=None,
            service=False):
     dom = Dom()
 
     i = dom.create_element('input')
     i.set_attribute('id', field_id)
+    i.set_attribute('name', field_id)
+    i.set_attribute('class', 'form-control')
+    if placeholder is not None:
+        i.set_attribute('placeholder', placeholder)
 
     api_fields = []
     for field in fields:
         api_fields.append("%s=%s" % (field, fields[field]))
+
     api_fields = ",".join(api_fields)
 
     js = "$(\"#%s\").autocomplete({" % (field_id,)
-    js += "source: '%s/select/?api=%s&fields=%s'," % (req.app, url, api_fields)
+    if keywords_mode is True:
+        js += "source: '%s/select/?api=%s&fields=%s&keywords_mode=1'," % (req.app, url, api_fields)
+    else:
+        js += "source: '%s/select/?api=%s&fields=%s'," % (req.app, url, api_fields)
+
     js += "minLength: 3,"
     js += "position: { my : \"right top\", at: \"right bottom\" },"
+    if select is not None:
+        js += "select: function(event, ui) {"
+        js += select
+        js += "},"
     #js += "select: function(event, ui) {"
     #js += "var id = ui.item.id;"
     #js += "document.getElementById("$randomId_input").value = id;"
@@ -78,17 +94,35 @@ class Select(object):
                                                headers=request_headers)
 
         response = []
-        for row in result:
-            record = {}
-            values = []
-            for field in row:
-                if field == 'id':
-                    record['id'] = row[field]
-            for api_field in api_fields:
-                field, name = api_field.split("=")
-                values.append("%s" % (row[field],))
-            values = " ".join(values)
-            record['value'] = values
-            record['label'] = values
-            response.append(record)
+        if 'keywords_mode' in req.post:
+            for row in result:
+                # DONT USE ONE FOR.. ID could come only later...
+                for field in row:
+                    if field == 'id':
+                        id = row[field]
+                for api_field in api_fields:
+                    field, name = api_field.split("=")
+                    if row[field] is not None:
+                        if search.lower() in row[field].lower():
+                            record = {}
+                            record['id'] = id
+                            record['label'] = row[field]
+                            record['value'] = row[field]
+                            response.append(record)
+                    
+        else:
+            for row in result:
+                record = {}
+                values = []
+                for field in row:
+                    if field == 'id':
+                        record['id'] = row[field]
+
+                for api_field in api_fields:
+                    field, name = api_field.split("=")
+                    values.append("%s" % (row[field],))
+                values = " ".join(values)
+                record['value'] = values
+                record['label'] = values
+                response.append(record)
         return json.dumps(response, indent=4)

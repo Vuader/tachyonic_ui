@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 
 menu.admin.add('/Accounts/Users','/users','users:view')
 
+
 @app.resources()
 class User(object):
     def __init__(self):

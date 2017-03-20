@@ -47,7 +47,7 @@ class Themes(object):
         self.css['div.locked']['background-color'] = '#000000'
         self.css['div.locked']['overflow'] = 'hidden'
         self.css['div.locked']['position'] = 'fixed'
-        self.css['div.locked']['z-index'] = '1003'
+        self.css['div.locked']['z-index'] = '1050'
         self.css['div.locked']['top'] = '0'
         self.css['div.locked']['left'] = '0'
         self.css['div.locked']['height'] = '100%'
@@ -86,14 +86,14 @@ class Themes(object):
         self.css['div.window'] = {}
         self.css['div.window']['display'] = 'none'
         self.css['div.window']['position'] = 'absolute'
-        self.css['div.window']['top'] = '55px'
+        self.css['div.window']['top'] = '45px'
         self.css['div.window']['left'] = '10%'
         self.css['div.window']['right'] = '10%'
         self.css['div.window']['margin'] = 'auto'
         self.css['div.window']['width'] = '80%'
         self.css['div.window']['height'] = 'auto'
         self.css['div.window']['background-color'] = '#FFFFFF'
-        self.css['div.window']['z-index'] = '1004'
+        self.css['div.window']['z-index'] = '1055'
         self.css['div.window']['overflow'] = 'auto'
         self.css['div.window']['border'] = '1px solid rgba(0, 0, 0, .2)'
         self.css['div.window']['border-radius'] = '6px'
@@ -199,6 +199,11 @@ class Themes(object):
         self.css['div.info']['background-color'] = '#deeff7'
         self.css['div.info']['color'] = '#6d8a98'
         self.css['div.info']['display'] = 'none'
+        self.css['div.ids'] = {}
+        self.css['div.ids']['color'] = '#006621'
+        self.css['div.search_title'] = {}
+        self.css['div.search_title']['color'] = ''
+        self.css['div.search_title']['font-size'] = '18px'
         self.css['div.success'] = {}
         self.css['div.success']['background-color'] = '#e2f2dd'
         self.css['div.success']['color'] = '#598766'
@@ -289,7 +294,7 @@ class Themes(object):
         self.css['div.block_content']['margin-top'] = '0px'
         self.css['div.block_content']['width'] = '100%'
         self.css['div.menu'] = {}
-        self.css['div.menu']['z-index'] = '10000'
+        self.css['div.menu']['z-index'] = '1003'
         self.css['div.menu']['position'] = 'relative'
         self.css['div.menu_accounts'] = {}
         self.css['div.menu_accounts']['z-index'] = '1001'
@@ -298,7 +303,7 @@ class Themes(object):
         self.css['div.menu_services']['z-index'] = '1000'
         self.css['div.menu_services']['position'] = 'relative'
         self.css['div.push_top'] = {}
-        self.css['div.push_top']['height'] = '90px'
+        self.css['div.push_top']['height'] = '70px'
         self.css['div.push_top']['width'] = '100%'
         self.css['div.push_top']['clear'] = 'both'
         self.css['div.push_top']['z-index'] = '1'
@@ -307,20 +312,6 @@ class Themes(object):
         self.css['div.push_bottom']['width'] = '100%'
         self.css['div.push_bottom']['clear'] = 'both'
         self.css['div.push_bottom']['z-index'] = '1'
-        self.css['div.account'] = {}
-        self.css['div.account']['background-color'] = '#ffff00'
-        self.css['div.account']['top'] = '50px'
-        self.css['div.account']['clear'] = 'both'
-        self.css['div.account']['color'] = '#000000'
-        self.css['div.account']['font-size'] = '12px'
-        self.css['div.account']['font-weight'] = 'bold'
-        self.css['div.account']['height'] = '20px'
-        self.css['div.account']['line-height'] = '20px'
-        self.css['div.account']['margin-bottom'] = '0px'
-        self.css['div.account']['margin-top'] = '0px'
-        self.css['div.account']['position'] = 'fixed'
-        self.css['div.account']['z-index'] = '500'
-        self.css['div.account']['width'] = '100%'
         self.css['footer'] = {}
         self.css['footer']['background-color'] = '#5B5B5B'
         self.css['footer']['bottom'] = '0px'
@@ -336,10 +327,7 @@ class Themes(object):
         self.css['footer']['z-index'] = '1010'
         self.css['footer']['width'] = '100%'
         self.css['footer:before'] = {}
-        self.css['footer:before']['content'] = """
-        Tachyon Framework - Copyright (c) 2016 to 2017,
-        Christiaan Frans Rademan, Allan Swanepoel, Dave Kruger. All rights resevered. BSD3-Clause License
-        """
+        self.css['footer:before']['content'] = "\"Tachyon Framework - Copyright (c) 2016 to 2017, Christiaan Frans Rademan, Allan Swanepoel, Dave Kruger. All rights resevered. BSD3-C    lause License\""
         self.css['footer:after'] = {}
         app.context['css'] = self.css
         router.add(const.HTTP_GET, '/css', self.get, 'tachyonic:public')
