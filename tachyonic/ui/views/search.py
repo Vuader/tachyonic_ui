@@ -53,6 +53,8 @@ class Search(object):
             enter = title.create_element("a")
             enter.set_attribute("class", "btn btn-space btn-xs btn-warning")
             enter.append("Open")
+            enter.set_attribute('data-url', "%s/tenant" % req.get_app_url())
+            enter.set_attribute('data-name', 'View Account')
             ids.append('<B>Tenant ID</B> ')
             ids.append(dm['id'])
             ids.append(' <B>External ID</B> ')

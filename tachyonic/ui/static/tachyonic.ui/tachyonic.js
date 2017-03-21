@@ -51,6 +51,14 @@ function ajax_query(element, url, form=null, form_save=false, load_window=false)
                     link(this);
                     e.preventDefault()
                 });
+                $("#window_content a").on("click", function(e) {
+                    link(this);
+                    e.preventDefault()
+                });
+                $("#service a").on("click", function(e) {
+                    link(this);
+                    e.preventDefault()
+                });
                 $("#service button").on("click", function(e) {
                     link(this);
                     e.preventDefault()
