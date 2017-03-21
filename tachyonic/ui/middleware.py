@@ -61,7 +61,7 @@ class Auth(Token):
             jinja.request['SEARCH'] = select(req, 'search', '/v1/search',
                                              api_fields,
                                              select=select_js,
-                                             placeholder="Customer Name",
+                                             placeholder="Tenant Name",
                                              keywords_mode=True)
         else:
             clear_session(req)
