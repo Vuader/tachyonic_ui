@@ -439,7 +439,7 @@ function poll(site) {
         dataType: "json",
         //complete: poll,
         error: function(XMLHttpRequest, textStatus, errorThrown) {
-            setTimeout(poll, 60000);
+            setTimeout(function() { poll(site); }, 60000);
         },
         timeout: 300000 });
     }
