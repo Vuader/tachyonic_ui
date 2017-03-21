@@ -19,6 +19,7 @@ class Themes(object):
         images = "%s/tachyonic.ui/images" % (static,)
         self.css = OrderedDict()
         self.css['.navbar-wrapper'] = {}
+        self.css['.navbar-wrapper']['box-shadow'] = '0 5px 15px rgba(0, 0, 0, .5)'
         self.css['.modal-header'] = {}
         self.css['.modal-header']['background-color'] = "#98AFC7"
         self.css['.modal-header']['border-bottom'] = "1px solid #000"
@@ -351,7 +352,7 @@ class Themes(object):
         self.css['.tenant-bar-box']['padding-left'] = '8px'
         self.css['.tenant-bar-box']['padding-right'] = '8px'
         self.css['.tenant-bar-box']['padding-bottom'] = '8px'
-        self.css['.tenant-bar-box']['background-color'] = '#808080'
+        self.css['.tenant-bar-box']['background-color'] = '#222'
         self.css['.tenant-bar-box']['border'] = '0px solid rgba(0, 0, 0, .2)'
         self.css['.tenant-bar-box']['border-radius'] = '0px 0px 6px 6px'
         self.css['.tenant-bar-box']['box-shadow'] = '0 5px 15px rgba(0, 0, 0, .5)'
@@ -361,7 +362,7 @@ class Themes(object):
         self.css['.search-bar-box']['padding-left'] = '8px'
         self.css['.search-bar-box']['padding-right'] = '8px'
         self.css['.search-bar-box']['padding-bottom'] = '8px'
-        self.css['.search-bar-box']['background-color'] = '#808080'
+        self.css['.search-bar-box']['background-color'] = '#222'
         self.css['.search-bar-box']['border'] = '0px solid rgba(0, 0, 0, .2)'
         self.css['.search-bar-box']['border-radius'] = '0px 0px 6px 6px'
         self.css['.search-bar-box']['box-shadow'] = '0 5px 15px rgba(0, 0, 0, .5)'
