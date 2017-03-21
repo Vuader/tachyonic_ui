@@ -93,7 +93,6 @@ class DataTables(object):
     def dt(self, req, resp):
         resp.headers['Content-Type'] = const.APPLICATION_JSON
         url = req.query.get('api')
-    
         api_fields = req.query.getlist('fields', [ '' ])
         api_fields = api_fields[0].split(",")
         draw = req.query.getlist('draw', [ 0 ])

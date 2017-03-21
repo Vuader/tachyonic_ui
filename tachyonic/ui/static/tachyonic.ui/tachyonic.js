@@ -51,6 +51,14 @@ function ajax_query(element, url, form=null, form_save=false, load_window=false)
                     link(this);
                     e.preventDefault()
                 });
+                $("#window_content a").on("click", function(e) {
+                    link(this);
+                    e.preventDefault()
+                });
+                $("#service a").on("click", function(e) {
+                    link(this);
+                    e.preventDefault()
+                });
                 $("#service button").on("click", function(e) {
                     link(this);
                     e.preventDefault()
@@ -429,31 +437,24 @@ function action(data) {
 /**
   * AJAX Polling function
   */
-function poll() {
+function poll(site) {
     if (login == true) {
-        $.ajax({ url: "/ui/messaging",
+        $.ajax({ url: site + "/messaging",
         success: function(data) {
             action(data);
-            poll();
+            poll(site);
         },
         dataType: "json",
         //complete: poll,
         error: function(XMLHttpRequest, textStatus, errorThrown) {
-            setTimeout(poll, 60000);
+            setTimeout(function() { poll(site); }, 60000);
         },
         timeout: 300000 });
     }
     else {
-        setTimeout(poll, 1000);
+        setTimeout(function() { poll(site); }, 1000);
     }
 }
-
-/**
-  * Run Polling function
-  */
-$( document ).ready(function() {
-    poll()
-});
 
 /**
   * Show menu item you clicked on.
