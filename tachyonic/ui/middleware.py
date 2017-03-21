@@ -9,6 +9,7 @@ from tachyonic import jinja
 from tachyonic.neutrino import constants as const
 from tachyonic.client.middleware import Token
 from tachyonic.client import exceptions
+from tachyonic.neutrino import html_assets 
 
 from tachyonic.ui.auth import clear_session
 from tachyonic.ui.menu import render_menus
@@ -27,6 +28,7 @@ class Globals(object):
 
     def pre(self, req, resp):
         jinja.globals['REQUEST_ID'] = req.request_id
+        jinja.globals['HTML_ASSETS'] = html_assets.render(req)
 
 
 class Auth(Token):
@@ -35,6 +37,7 @@ class Auth(Token):
             super(Auth, self).pre(req, resp)
         except exceptions.ClientError:
             clear_session(req)
+            self.init(req, resp)
 
 
     def init(self, req, resp):
