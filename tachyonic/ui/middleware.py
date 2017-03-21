@@ -35,13 +35,13 @@ class Auth(Token):
     def pre(self, req, resp):
         try:
             super(Auth, self).pre(req, resp)
+            resp.headers['Content-Type'] = const.TEXT_HTML
         except exceptions.ClientError:
+            resp.headers['Content-Type'] = const.TEXT_HTML
             clear_session(req)
             self.init(req, resp)
 
-
     def init(self, req, resp):
-        resp.headers['Content-Type'] = const.TEXT_HTML
         logout = req.query.get('logout')
         jinja.request['LOGIN'] = False
         jinja.request['USERNAME'] = req.context['username']
