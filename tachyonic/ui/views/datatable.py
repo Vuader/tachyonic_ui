@@ -92,7 +92,7 @@ class DataTables(object):
 
     def dt(self, req, resp):
         resp.headers['Content-Type'] = const.APPLICATION_JSON
-        url = req.query.getlist('api', [ '' ])
+        url = req.query.get('api')
         api_fields = req.query.getlist('fields', [ '' ])
         api_fields = api_fields[0].split(",")
         draw = req.query.getlist('draw', [ 0 ])
@@ -120,7 +120,7 @@ class DataTables(object):
 
         if search[0] is not None:
             request_headers['X-Search'] = search[0]
-        response_headers, result = api.execute(const.HTTP_GET, url[0],
+        response_headers, result = api.execute(const.HTTP_GET, url,
                                                headers=request_headers)
 
         recordsTotal = int(response_headers.get('X-Total-Rows',0))

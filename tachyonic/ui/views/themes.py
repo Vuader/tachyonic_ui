@@ -66,7 +66,7 @@ class Themes(object):
         self.css['div.confirm']['width'] = '500px'
         self.css['div.confirm']['height'] = 'auto'
         self.css['div.confirm']['background-color'] = '#FFFFFF'
-        self.css['div.confirm']['z-index'] = '1005'
+        self.css['div.confirm']['z-index'] = '10000'
         self.css['div.confirm']['overflow'] = 'auto'
         self.css['div.confirm']['border'] = '1px solid rgba(0, 0, 0, .2)'
         self.css['div.confirm']['border-radius'] = '6px'
