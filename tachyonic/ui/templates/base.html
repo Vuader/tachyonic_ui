@@ -60,6 +60,9 @@ $( document ).ready(function() {
                 </ul>
                 </div>
                 {% if LOGIN %}
+                <form class="navbar-form navbar-right" method="get" action="{{ SITE }}/logout">
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
                 <form id="searchForm" class="navbar-form navbar-right" method="post" action="{{ SITE }}/search" onsubmit="link(this); return false;" data-url="{{SITE}}/search" data-name="Search Tenants">
                     <div class="form-group">
                         {{ SEARCH }}
@@ -160,9 +163,6 @@ $( document ).ready(function() {
                     <div class="box">
                         {{ EMAIL }}
                     </div>
-                    <form method="get" action="{{ SITE }}/logout">
-                        <button type="submit" class="btn btn-danger">Logout</button>
-                    </form>
                 </div>
             </div>
             {% endif %}
