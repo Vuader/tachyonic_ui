@@ -8,6 +8,7 @@ from tachyonic import router
 from tachyonic.neutrino import constants as const
 from tachyonic.neutrino.web.dom import Dom
 from tachyonic.client import Client
+from tachyonic.neutrino.utils.general import timer as nfw_timer
 
 from tachyonic.ui.models.tenants import Tenant as TenantModel
 
@@ -28,13 +29,15 @@ class Search(object):
                    'tachyonic:login')
 
     def search(self, req, resp):
+        t = nfw_timer()
         api = Client(req.context['restapi'])
         search = req.post.get('search')
         request_headers = {}
         request_headers['X-Search'] = search
+        request_headers['X-Order-By'] = 'name desc'
         dom = Dom()
-        searchfor = dom.create_element('div')
-        searchfor.append("Searching for %s" % (search,))
+        searchfor = dom.create_element('H1')
+        searchfor.append("Searching for <i><u>%s</u></i>" % (search,))
 
         response_headers, result = api.execute(const.HTTP_GET, '/v1/search',
                                                headers=request_headers)
@@ -42,15 +45,16 @@ class Search(object):
             item = dom.create_element('div')
             item.set_attribute('class', 'search_result')
             form = item.create_element('form')
-            form.set_attribute('data-url', "%s/tenant" % req.get_app_url())
+            form.set_attribute('data-url', "%s/tenant" % req.app)
             form.set_attribute('data-name', 'View Account')
+            form.set_attribute('method', 'post')
             title = form.create_element('div')
             title.set_attribute('class', 'search_title')
             ids = item.create_element('div')
             ids.set_attribute('class','ids')
             info = item.create_element('div')
 
-            dm = TenantModel(r, validate=False,
+            dm = TenantModel(data=r, validate=False,
                              readonly=True, cols=2)
             title.append(dm['name'])
             enter = title.create_element("input")
@@ -68,12 +72,17 @@ class Search(object):
                         field.label is not None):
                     if (f != 'id' and f != 'external_id' and
                             f != 'name'):
-                        info.append("%s" % (field.label,))
-                        info.append(" ")
-                        if str(field.value()).lower() == search.lower():
-                            info.append("<B>%s</B>" % (field.value,))
+                        info.append("<B>%s:</B> " % (field.label,))
+                        if str(field.value()).lower() in search.lower():
+                            info.append("<span class=\"red\"><I><U>%s</U></I></span>" % (field.value(),))
+                        elif search.lower() in str(field.value()).lower():
+                            info.append("<span class=\"red\"><I><U>%s</U></I></span>" % (field.value(),))
                         else:
                             info.append("<I>%s</I>" % (field.value(),))
                         info.append(" ")
-
+        found = dom.create_element('H1')
+        found = found.create_element('I')
+        found.append("<H3>Results found %s in %s seconds</H3>" % (len(result),
+                                                          nfw_timer(t)))
+           
         return dom.get()

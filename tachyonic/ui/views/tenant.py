@@ -24,6 +24,10 @@ class Tenant(object):
                    '/tenant',
                    self.view,
                    'tachyonic:login')
+        router.add(const.HTTP_POST,
+                   '/tenant',
+                   self.view,
+                   'tachyonic:login')
 
     def view(self, req, resp):
         api = Client(req.context['restapi'])

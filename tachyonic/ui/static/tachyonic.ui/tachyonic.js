@@ -67,7 +67,7 @@ function ajax_query(element, url, form=null, form_save=false, load_window=false)
                     link(this);
                     e.preventDefault()
                 });
-                $("#service_form form").submit(function( e )  {
+                $("#service form").submit(function( e )  {
                     link(this);
                     e.preventDefault()
                 });
@@ -182,6 +182,7 @@ function close_window() {
         $( "#window" ).toggle( "puff", 1000 );
         windowed = false;
         document.getElementById('locked').style.display = "none";
+        document.getElementById('confirm').style.display = 'none';
     }
 }
 
