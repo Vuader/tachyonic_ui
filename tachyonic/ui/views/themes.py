@@ -320,6 +320,7 @@ class Themes(object):
         self.css['div.block_content']['margin-right'] = '0px'
         self.css['div.block_content']['margin-top'] = '0px'
         self.css['div.block_content']['width'] = '100%'
+        self.css['div.block_content']['overflow'] = 'hidden'
         self.css['div.menu'] = {}
         self.css['div.menu']['z-index'] = '1003'
         self.css['div.menu']['position'] = 'relative'

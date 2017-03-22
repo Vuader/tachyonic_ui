@@ -61,6 +61,11 @@ class Search(object):
             enter.set_attribute("class", "btn btn-space btn-xs btn-warning")
             enter.set_attribute("type", "submit")
             enter.set_attribute("value", "Open")
+            tenant_id = form.create_element('input')
+            tenant_id.set_attribute('type','hidden')
+            tenant_id.set_attribute('name','X-Tenant-Id')
+            tenant_id.set_attribute('value',r['id'])
+
             ids.append('<B>Tenant ID</B> ')
             ids.append(dm['id'])
             ids.append(' <B>External ID</B> ')

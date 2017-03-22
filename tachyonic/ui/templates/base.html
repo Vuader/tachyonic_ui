@@ -80,18 +80,19 @@ $( document ).ready(function() {
 <div class="top-bar">
     <div class="container">
         <div class="pull-left tenant-bar-box">
-            <form class="form-inline" disabled onsubmit='return false;'>
+            <form class="form-inline pull-left" disabled onsubmit='return false;'>
                 <div class="form-group" style="width:100%">
-                    <input id='open_tenant' class="form-control" readonly style="width: 100%" placeholder="Current Open Tenant">
+                    <input id='open_tenant' class="form-control" readonly style="width: 290px" placeholder="Current Open Tenant">
                 </div>
             </form>
+            <a href="{{SITE}}" class="btn btn-danger" class="pull-right">Close</a>
         </div>
         <div class="pull-right search-bar-box">
             <form class="form-inline pull-left" method="post" action="{{ SITE }}/">
                 <div class="form-group">
-                    <select class="form-control" name="domain" onchange="this.form.submit()">
+                    <select class="form-control" name="X-Domain" onchange="this.form.submit()">
                         {% for d in DOMAINS %}
-                            <option value='{{ d }}'>{{ d }}</option>
+                        <option value='{{ d[0] }}' {% if REQUEST.context['domain_id'] == d[0] %}selected{% endif %}  >{{ d[1] }}</option>
                         {% endfor %}
                     </select>
                 </div>

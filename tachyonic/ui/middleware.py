@@ -9,7 +9,7 @@ from tachyonic import jinja
 from tachyonic.neutrino import constants as const
 from tachyonic.client.middleware import Token
 from tachyonic.client import exceptions
-from tachyonic.neutrino import html_assets 
+from tachyonic.neutrino import html_assets
 
 from tachyonic.ui.auth import clear_session
 from tachyonic.ui.menu import render_menus
@@ -45,6 +45,8 @@ class Auth(Token):
         logout = req.query.get('logout')
         jinja.request['LOGIN'] = False
         jinja.request['USERNAME'] = req.context['username']
+        req.session['tenant_id'] = req.context['tenant_id']
+        req.session['domain'] = req.context['domain_id']
         jinja.request['EMAIL'] = req.context['email']
         jinja.request['DOMAINS'] = req.context['domains']
         if logout is not None:
