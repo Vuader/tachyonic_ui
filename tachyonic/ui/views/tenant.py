@@ -14,7 +14,7 @@ from tachyonic.ui import menu
 
 log = logging.getLogger(__name__)
 
-menu.accounts.add('/View Acconunt','/tenant','tachyonic:login')
+menu.accounts.add('/View Account','/tenant','tachyonic:login')
 
 @app.resources()
 class Tenant(object):
@@ -31,4 +31,18 @@ class Tenant(object):
 
     def view(self, req, resp):
         api = Client(req.context['restapi'])
-        pass
+        server_headers, response = api.execute(const.HTTP_GET, '/v1/tenant')
+        if 'id' in response:
+            dom = Dom()
+            script = dom.create_element('script')
+            name = response['name']
+            js = "document.getElementById('open_tenant')"
+            js += ".value = '%s'" % name
+            script.append(js)
+
+        form = TenantModel(response, validate=False,
+                           readonly=True, cols=2)
+        tenant = dom.create_element('form')
+        tenant.set_attribute('onsubmit', 'onsubmit="return false;"')
+        tenant.append(form)
+        return dom.get()

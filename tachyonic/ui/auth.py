@@ -39,10 +39,10 @@ def authenticated(req, auth):
 def clear_session(req):
     if 'token' in req.session:
         del req.session['token']
-    if 'domain' in req.session:
-        del req.session['domain']
-    if 'tenant' in req.session:
-        del req.session['tenant']
+    if 'domain_id' in req.session:
+        del req.session['domain_id']
+    if 'tenant_id' in req.session:
+        del req.session['tenant_id']
     req.context['login'] = False
     req.context['domain_admin'] = False
     req.context['domains'] = []
