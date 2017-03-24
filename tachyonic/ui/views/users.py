@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import logging
 from collections import OrderedDict
 
+from tachyonic import jinja
 from tachyonic import app
 from tachyonic import router
 from tachyonic.neutrino import constants as const
@@ -14,6 +15,7 @@ from tachyonic.ui.views import ui
 from tachyonic.ui.views.datatable import datatable
 from tachyonic.ui import menu
 from tachyonic.ui.models.users import User as UserModel
+from tachyonic.ui.views.select import select
 
 log = logging.getLogger(__name__)
 
@@ -77,10 +79,21 @@ class User(object):
             headers, response = api.execute(const.HTTP_PUT, "/v1/user/%s" %
                                             (user_id,), form)
         else:
+            api_fields = OrderedDict()
+            api_fields['id'] = "ID"
+            api_fields['name'] = "Name"
+            tenants = select(req, 'tenant_assignment', '/v1/search',
+                      api_fields,
+                      #select=select_js,
+                      placeholder="Tenant Name",
+                      keywords_mode=True)
             api = Client(req.context['restapi'])
             headers, response = api.execute(const.HTTP_GET, "/v1/user/%s" % (user_id,))
             form = UserModel(response, validate=False, cols=2)
-            ui.edit(req, resp, content=form, id=user_id, title='Edit User')
+            t = jinja.get_template('tachyonic.ui/assignments.html')
+            extra = t.render(tenants=tenants)
+            ui.edit(req, resp, content=form, id=user_id, title='Edit User',
+                    extra=extra)
 
     def create(self, req, resp):
         if req.method == const.HTTP_POST:

@@ -8,9 +8,10 @@ from tachyonic import app
 from tachyonic import jinja
 from tachyonic.neutrino import constants as const
 from tachyonic.client.middleware import Token
-from tachyonic.client import exceptions
+from tachyonic.client import exceptions as client_exceptions
 from tachyonic.neutrino import html_assets
 
+from tachyonic.ui import exceptions as ui_exceptions
 from tachyonic.ui.auth import clear_session
 from tachyonic.ui.menu import render_menus
 from tachyonic.ui.views.select import select
@@ -36,10 +37,12 @@ class Auth(Token):
         try:
             super(Auth, self).pre(req, resp)
             resp.headers['Content-Type'] = const.TEXT_HTML
-        except exceptions.ClientError:
+        except client_exceptions.ClientError as e:
             resp.headers['Content-Type'] = const.TEXT_HTML
-            clear_session(req)
-            self.init(req, resp)
+            if e.status != const.HTTP_500:
+                clear_session(req)
+                self.init(req, resp)
+                raise ui_exceptions.Authentication("Auth Token %s" % e)
 
     def init(self, req, resp):
         logout = req.query.get('logout')
@@ -49,6 +52,7 @@ class Auth(Token):
         req.session['domain'] = req.context['domain_id']
         jinja.request['EMAIL'] = req.context['email']
         jinja.request['DOMAINS'] = req.context['domains']
+        jinja.request['ROLES'] = req.context['roles']
         if logout is not None:
             clear_session(req)
         elif req.context['login'] is True:

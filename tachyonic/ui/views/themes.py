@@ -14,6 +14,11 @@ log = logging.getLogger(__name__)
 @app.resources()
 class Themes(object):
     def __init__(self):
+        router.add(const.HTTP_GET, '/css', self.get, 'tachyonic:public')
+
+    def get(self, req, resp):
+        resp.headers['Content-Type'] = const.TEXT_CSS
+
         app_config = app.config.get('application')
         static = app_config.get('static', '').rstrip('/')
         images = "%s/tachyonic.ui/images" % (static,)
@@ -360,7 +365,6 @@ class Themes(object):
         self.css['.tenant-bar-box']['border'] = '0px solid rgba(0, 0, 0, .2)'
         self.css['.tenant-bar-box']['border-radius'] = '0px 0px 6px 6px'
         self.css['.tenant-bar-box']['box-shadow'] = '0 5px 15px rgba(0, 0, 0, .5)'
-        self.css['.tenant-bar-box']['min-width'] = '50%'
         self.css['.search-bar-box'] = {}
         self.css['.search-bar-box']['padding-top'] = '8px'
         self.css['.search-bar-box']['padding-left'] = '8px'
@@ -387,10 +391,13 @@ class Themes(object):
         self.css['footer:before']['content'] = "\"Tachyon Framework - Copyright (c) 2016 to 2017, Christiaan Frans Rademan, Allan Swanepoel, Dave Kruger. All rights resevered. BSD3-Clause License\""
         self.css['footer:after'] = {}
         app.context['css'] = self.css
-        router.add(const.HTTP_GET, '/css', self.get, 'tachyonic:public')
 
-    def get(self, req, resp):
-        resp.headers['Content-Type'] = const.TEXT_CSS
+        if req.is_mobile():
+            self.css['.search-bar-box']['width'] = '100%'
+            self.css['.tenant-bar-box']['min-width'] = '100%'
+        else:
+            self.css['.search-bar-box']['min-width'] = '40%'
+            self.css['.tenant-bar-box']['min-width'] = '50%'
 
         def css(d, tab=0):
             spacer = "    " * tab

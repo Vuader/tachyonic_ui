@@ -1,0 +1,52 @@
+<H2>Role Assignments</H2>
+<form method="post" action="{{ SITE }}/">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Domain
+                </th>
+                <th>
+                    Tenant
+                </th>
+                <th>
+                    Role
+                </th>
+                <th>
+                    &nbsp;
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <select class="form-control" name="X-Domain" onchange="this.form.submit()">
+                            {% for d in DOMAINS %}                                                                                                                    
+                            <option value='{{ d[0] }}'>{{ d[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        {{ tenants }}                                                                                                     
+                        <input class="form-control" name="tenant_id" type="text" value="" readonly>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <select class="form-control" name="X-Domain" onchange="this.form.submit()">
+                            {% for d in ROLES %}
+                            <option value='{{ d }}'>{{ d }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn btn-success" type="submit">Add</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>

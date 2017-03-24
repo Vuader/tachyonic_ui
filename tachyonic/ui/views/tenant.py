@@ -37,7 +37,8 @@ class Tenant(object):
             script = dom.create_element('script')
             name = response['name']
             js = "document.getElementById('open_tenant')"
-            js += ".value = '%s'" % name
+            js += ".value = '%s';" % name
+            js += "tenant_selected = true;" 
             script.append(js)
 
         form = TenantModel(response, validate=False,

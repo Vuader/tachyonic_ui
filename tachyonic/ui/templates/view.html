@@ -1,56 +1,73 @@
 {% if save_url %}
-<form enctype='multipart/form-data' method="post" novalidate role="form" data-url="{{ save_url }}" data-name="{{ title }}" data-save="true">
+    <form id='tview' enctype='multipart/form-data' method="post" novalidate role="form" data-url="{{ save_url }}" data-name="{{ title }}" data-save="true">
+        {{ content }}
+    </form>
+    <div style="width:100%;clear:both;"></div>
+    {% if extra %}
+        {{ extra }}
+    {% endif %}
+    <div style="width:100%;clear:both;"></div>
 {% elif created_url %}
-<form enctype='multipart/form-data' method="post" novalidate role="form" data-url="{{ created_url }}" data-name="{{ title }}">
+    <form id='tview' enctype='multipart/form-data' method="post" novalidate role="form" data-url="{{ created_url }}" data-name="{{ title }}">
+    {{ content }}
+    </form>
+    <div style="width:100%;clear:both;"></div>
+    {% if extra %}
+        {{ extra }}
+    {% endif %}
+    <div style="width:100%;clear:both;"></div>
 {% elif view_form %}
-<form enctype='multipart/form-data' method="post" novalidate role="form" disabled onsubmit='return false;'>
+    <form id='tview' enctype='multipart/form-data' method="post" novalidate role="form" disabled onsubmit='return false;'>
+    {{ content }}
+    </form>
+    <div style="width:100%;clear:both;"></div>
+    {% if extra %}
+        {{ extra }}
+    <div style="width:100%;clear:both;"></div>
+    {% endif %}
+{% else %}
+    {{ content }}
+    <div style="width:100%;clear:both;"></div>
+    {% if extra %}
+        {{ extra }}
+    {% endif %}
+    <div style="width:100%;clear:both;"></div>
 {% endif %}
-{{ content }}
-{% if view_form %}
-</form>
-{% endif %}
-<div style="width:100%;clear:both;">
+
 {% if create_url %}
-<button class="btn btn-primary" data-url="{{ create_url }}" data-name="{{ title }}">Create</button>
+    <button class="btn btn-primary" data-url="{{ create_url }}" data-name="{{ title }}">Create</button>
 {% endif %}
 {% if save_url %}
-<input type="submit" class="btn btn-primary" value="Save">
+    <input type="submit" class="btn btn-primary" value="Save" onclick="link(getElementById('tview'));">
 {% endif %}
 {% if created_url %}
-<input type="submit" class="btn btn-primary" value="Create">
+    <input type="submit" class="btn btn-primary" value="Create" onclick="link(getElementById('tview'));">
 {% endif %}
 {% if edit_url %}
-<button class="btn btn-warning" data-url="{{ edit_url }}" data-name="{{ title }}">Edit</button>
+    <button class="btn btn-warning" data-url="{{ edit_url }}" data-name="{{ title }}">Edit</button>
 {% endif %}
 {% if delete_url %}
-<button class="btn btn-danger" data-url="{{ delete_url }}" data-name="{{ title }}" data-confirm="{{ confirm }}">Delete</button>
+    <button class="btn btn-danger" data-url="{{ delete_url }}" data-name="{{ title }}" data-confirm="{{ confirm }}">Delete</button>
 {% endif %}
 {% if cancel_url %}
-<button class="btn btn-default" data-url="{{ cancel_url }}" data-name="{{ title }}">Cancel</button>
+    <button class="btn btn-default" data-url="{{ cancel_url }}" data-name="{{ title }}">Cancel</button>
 {% endif %}
 {% if back_url %}
-<button class="btn btn-default" data-url="{{ back_url }}" data-name="{{ title }}">Back</button>
+    <button class="btn btn-default" data-url="{{ back_url }}" data-name="{{ title }}">Back</button>
 {% endif %}
-<button id="window_close" class="btn btn-default" style="display: none;" onclick="close_window()">Close</button>
-{% if save_url %}
-</form>
-{% elif created_url %}
-</div>
-</form>
-{% endif %}
-<script>
-    $( document ).ready(function() {   
-        var display = document.getElementById('window').style.display;
-        if (display == 'block') {
-            document.getElementById('window_close').style.display = 'inline';
-        }
-        {% if title %}
-        title("{{ title }}");
-        {% endif %}
-    });
-</script>
-{% if extra %}
-{{ extra }}
-{% endif %}
+    <button id="window_close" class="btn btn-default" style="display: none;" onclick="close_window()">Close</button>
+
+    <script>
+        $( document ).ready(function() {   
+            var display = document.getElementById('window').style.display;
+            if (display == 'block') {
+                document.getElementById('window_close').style.display = 'inline';
+            }
+            {% if title %}
+            title("{{ title }}");
+            {% endif %}
+        });
+    </script>
+
 {% include 'tachyonic.ui/error.html' %}
 
