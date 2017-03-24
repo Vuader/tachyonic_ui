@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 def datatable(req, table_id, url,
               fields, width='100%', view_button=False,
-              service=False):
+              service=False, endpoint=None):
     dom = Dom()
     table = dom.create_element('table')
     table.set_attribute('id', table_id)
@@ -51,7 +51,11 @@ def datatable(req, table_id, url,
     js += "var table = $('#%s').DataTable( {" % (table_id,)
     js += "'processing': true,"
     js += "'serverSide': true,"
-    js += "'ajax': '%s/dt/?api=%s&fields=%s'" % (req.app, url, api_fields)
+    js += "'ajax': '%s/dt/?api=%s&fields=%s" % (req.app, url, api_fields)
+    if endpoint:
+        js += "&endpoint=%s'" % (endpoint,)
+    else:
+        js += "'"
     if view_button is True:
         js += ",\"columnDefs\": ["
         js += "{\"targets\": -1,"
@@ -95,6 +99,7 @@ class DataTables(object):
         url = req.query.get('api')
         api_fields = req.query.getlist('fields', [ '' ])
         api_fields = api_fields[0].split(",")
+        endpoint = req.query.get('endpoint', None)
         draw = req.query.getlist('draw', [ 0 ])
         start = req.query.getlist('start', [ 0 ])
         length = req.query.getlist('length', [ 0 ])
@@ -111,7 +116,11 @@ class DataTables(object):
                     order_field, order_field_name = api_field.split('=')
                     orderby = "%s %s" % (order_field, order)
                 count += 1
-        api = Client(req.context['restapi'])
+        if endpoint:
+            config = req.config.get('endpoints')
+            api = Client(config.get(endpoint))
+        else:
+            api = Client(req.context['restapi'])
         request_headers = {}
         request_headers['X-Pager-Start'] = start[0]
         request_headers['X-Pager-Limit'] = length[0]
