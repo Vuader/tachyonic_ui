@@ -68,7 +68,8 @@ class Roles(object):
                     view_form=True)
 
     def edit(self, req, resp, role_id=None):
-        if req.method == const.HTTP_POST:
+        save = req.post.get('save', False)
+        if req.method == const.HTTP_POST and save is not False:
             form = RoleModel(req.post, validate=True, readonly=True)
             api = Client(req.context['restapi'])
             headers, response = api.execute(const.HTTP_PUT, "/v1/role/%s" %

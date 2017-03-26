@@ -5,6 +5,7 @@ import logging
 
 from tachyonic import app
 from tachyonic import router
+from tachyonic import jinja
 from tachyonic.neutrino import constants as const
 from tachyonic.neutrino.web.dom import Dom
 from tachyonic.client import Client
@@ -28,21 +29,38 @@ class Tenant(object):
                    '/tenant',
                    self.view,
                    'tachyonic:login')
+        router.add(const.HTTP_GET,
+                   '/open_tenant',
+                   self.view,
+                   'tachyonic:public')
+        router.add(const.HTTP_POST,
+                   '/open_tenant',
+                   self.view,
+                   'tachyonic:public')
 
     def view(self, req, resp):
-        api = Client(req.context['restapi'])
-        server_headers, response = api.execute(const.HTTP_GET, '/v1/tenant')
-        if 'id' in response:
-            dom = Dom()
-            script = dom.create_element('script')
-            name = response['name']
-            js = "document.getElementById('open_tenant')"
-            js += ".value = '%s'" % name
-            script.append(js)
+        if req.context['login'] is True:
+            api = Client(req.context['restapi'])
+            server_headers, response = api.execute(const.HTTP_GET, '/v1/tenant')
+            if 'id' in response:
+                dom = Dom()
+                script = dom.create_element('script')
+                name = response['name']
+                js = "document.getElementById('open_tenant')"
+                js += ".value = '%s';" % name
+                js += "tenant_selected = true;"
+                script.append(js)
 
-        form = TenantModel(response, validate=False,
-                           readonly=True, cols=2)
-        tenant = dom.create_element('form')
-        tenant.set_attribute('onsubmit', 'onsubmit="return false;"')
-        tenant.append(form)
-        return dom.get()
+
+            form = TenantModel(response, validate=False,
+                               readonly=True, cols=2)
+            tenant = dom.create_element('form')
+            tenant.set_attribute('onsubmit', 'onsubmit="return false;"')
+            tenant.append(form)
+            if req.is_ajax():
+                return dom.get()
+            else:
+                t = jinja.get_template('tachyonic.ui/ajax_wrapper.html')
+                return t.render(title="View Account", content=dom.get())
+        else:
+            resp.redirect('/')

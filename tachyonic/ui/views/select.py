@@ -15,14 +15,16 @@ log = logging.getLogger(__name__)
 
 def select(req,
            field_id,
-           url,
-           fields,
+           url=None,
+           fields=None,
            css_class=None,
            input_field=None,
            click_url=None,
            keywords_mode=False,
            placeholder=None,
            select=None,
+           change=None,
+           source=None,
            service=False):
     dom = Dom()
 
@@ -34,13 +36,16 @@ def select(req,
         i.set_attribute('placeholder', placeholder)
 
     api_fields = []
-    for field in fields:
-        api_fields.append("%s=%s" % (field, fields[field]))
+    if fields is not None:
+        for field in fields:
+            api_fields.append("%s=%s" % (field, fields[field]))
 
-    api_fields = ",".join(api_fields)
+        api_fields = ",".join(api_fields)
 
     js = "$(\"#%s\").autocomplete({" % (field_id,)
-    if keywords_mode is True:
+    if source is not None:
+        js += "source: %s," % source
+    elif keywords_mode is True:
         js += "source: '%s/select/?api=%s&fields=%s&keywords_mode=1'," % (req.app, url, api_fields)
     else:
         js += "source: '%s/select/?api=%s&fields=%s'," % (req.app, url, api_fields)
@@ -51,19 +56,13 @@ def select(req,
         js += "select: function(event, ui) {"
         js += select
         js += "},"
-    #js += "select: function(event, ui) {"
-    #js += "var id = ui.item.id;"
-    #js += "document.getElementById("$randomId_input").value = id;"
-    #js += "},"
+    if change is not None:
+        js += "change: function(event, ui) {"
+        js += change
+        js += "},"
     js += "open: function(event, ui) {"
     js += "$(\".ui-autocomplete\").css(\"z-index\", 10000);"
     js += "}"
-    #js += "change: function(event, ui) {"
-    #js += "if (ui.item === null) {"
-    #js += "document.getElementById("$randomId_input").value = "";",
-    #js += "document.getElementById("$randomId_search").value = "";",
-    #js += "}"
-    #js += "}"
     js += "});"
 
     s = dom.create_element('script')
@@ -109,7 +108,7 @@ class Select(object):
                             record['label'] = row[field]
                             record['value'] = row[field]
                             response.append(record)
-                    
+
         else:
             for row in result:
                 record = {}
@@ -120,7 +119,9 @@ class Select(object):
 
                 for api_field in api_fields:
                     field, name = api_field.split("=")
-                    values.append("%s" % (row[field],))
+                    record[field] = row[field]
+                    if name is not None and name != 'None':
+                        values.append("%s" % (row[field],))
                 values = " ".join(values)
                 record['value'] = values
                 record['label'] = values

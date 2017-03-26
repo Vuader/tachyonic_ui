@@ -1,0 +1,108 @@
+<H2>Role Assignments</H2>
+<div id="assignments">
+    <form id='assignment' method="post" role="form" data-url="{{SITE}}/users/edit/{{ user_id }}" data-confirm="Please confirm the assignment action?">
+        <input type="hidden" name="user_id" value="{{ user_id }}">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Domain
+                    </th>
+                    <th>
+                        Tenant
+                    </th>
+                    <th>
+                        Role
+                    </th>
+                    {% if not readonly %}
+                    <th>
+                        &nbsp;
+                    </th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+            {% for a in assignments %}
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <select class="form-control" disabled readonly>
+                                <option>{{ a['domain_name'] }}</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <input class="form-control" type="text" value="{{ a['tenant_name'] }}" readonly>
+                            <input class="form-control" type="text" value="{{ a['tenant_id'] }}" readonly>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <select class="form-control" disabled readonly>
+                                <option>{{ a['role_name'] }}</option>
+                            </select>
+                        </div>
+                    </td>
+                    {% if not readonly %}
+                    <td>
+                        <button class="btn btn-danger" onclick="delete_role('{{ a['domain_id'] }}', '{{ a['tenant_id'] }}', '{{ a['role_name'] }}'); link(getElementById('assignment'));">Remove</button>
+                    </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            {% if not readonly %}
+                <input id="remove" type="hidden" name="remove" value="False">
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            {% if IS_ROOT %}
+                                <select class="form-control" name="domain" id="domain" onchange="clear_assign();">
+                                    <option value=''>Select Domain</option>
+                                    {% for d in all_domains %}
+                                    <option value='{{ d['id'] }}'>{{ d['name'] }}</option>
+                                    {% endfor %}
+                                </select>
+                                <span class="pull-right"><H4>or Tenant</H4></span>
+                            {% else %}
+                                <select class="form-control" name="domain" id="domain" onchange="clear_assign();">
+                                    <option value=''>Select Domain</option>
+                                    {% for d in DOMAINS %}
+                                    <option value='{{ d[0] }}'>{{ d[1] }}</option>
+                                    {% endfor %}
+                                </select>
+                                <span class="pull-right"><H4>or Tenant</H4></span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            {{ tenants }}                                                                                                     
+                            <input id="tenant_id" class="form-control" name="tenant_id" type="text" value="" readonly>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <select class="form-control" name="role" id="role">
+                                <option value=''>Select Role</option>
+                                {% if IS_ROOT %}
+                                    {% for d in all_roles %}
+                                    <option value='{{ d['name'] }}'>{{ d['name'] }}</option>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for d in ROLES %}
+                                    <option value='{{ d }}'>{{ d }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <input class="btn btn-success" type="submit" value="Add">
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </form>
+</div>
