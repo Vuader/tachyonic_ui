@@ -2,14 +2,17 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import logging
+import traceback
 from collections import OrderedDict
 
 from tachyonic import app
 from tachyonic import jinja
 from tachyonic.neutrino import constants as const
+from tachyonic.neutrino import exceptions
 from tachyonic.client.middleware import Token
 from tachyonic.client import exceptions as client_exceptions
 from tachyonic.neutrino import html_assets
+from tachyonic.client import Client
 
 from tachyonic.ui import exceptions as ui_exceptions
 from tachyonic.ui.auth import clear_session
@@ -24,32 +27,53 @@ class Globals(object):
         self.config = app.config
         self.ui_config = app.config.get('ui')
         self.app_config = self.config.get('application')
-        jinja.globals['TITLE'] = self.app_config.get('name','Tachyon')
-        jinja.globals['NAME'] = self.app_config.get('name')
+        jinja.globals['NAME'] = self.app_config.get('name', 'Tachyon UI')
 
     def pre(self, req, resp):
-        jinja.globals['REQUEST_ID'] = req.request_id
+        req.context['restapi'] = app.config.get("tachyon").get("restapi","http://127.0.0.1")
+        try:
+            api = Client(req.context['restapi'])
+            headers, theme = api.execute(const.HTTP_GET, "/v1/theme/%s/single" %
+                                          (req.get_host(),))
+            req.context['custom_background'] = theme['background']
+            req.context['custom_logo'] = theme['logo']
+            jinja.request['NAME'] = theme['name']
+            jinja.request['CUSTOM_LOGO'] = theme['logo']
+            jinja.request['THEME_DOMAIN'] = req.get_host()
+        except Exception as e:
+            trace = str(traceback.format_exc())
+            log.error("Unable to retrieve theme %s\n%s" % (e, trace))
+        jinja.request['REQUEST_ID'] = req.request_id
         jinja.globals['HTML_ASSETS'] = html_assets.render(req)
 
 
 class Auth(Token):
     def pre(self, req, resp):
         try:
-            super(Auth, self).pre(req, resp)
-            resp.headers['Content-Type'] = const.TEXT_HTML
+            if req.view is not None:
+                super(Auth, self).pre(req, resp)
+                resp.headers['Content-Type'] = const.TEXT_HTML
         except client_exceptions.ClientError as e:
             resp.headers['Content-Type'] = const.TEXT_HTML
             if e.status != const.HTTP_500:
                 clear_session(req)
                 self.init(req, resp)
-                raise ui_exceptions.Authentication("Auth Token %s" % e)
+                raise ui_exceptions.Authentication(e)
+            else:
+                self.init(req, resp)
+                raise exceptions.HTTPInternalServerError("RESTAPI Offline", e)
 
     def init(self, req, resp):
         logout = req.query.get('logout')
         jinja.request['LOGIN'] = False
+        if 'token' in req.session:
+            req.context['login'] = True
         jinja.request['USERNAME'] = req.context['username']
         req.session['tenant_id'] = req.context['tenant_id']
         req.session['domain'] = req.context['domain_id']
+        jinja.request['IS_ROOT'] = req.context['is_root']
+        jinja.request['DOMAIN'] = req.context['domain']
+        jinja.request['DOMAIN_ID'] = req.context['domain_id']
         jinja.request['EMAIL'] = req.context['email']
         jinja.request['DOMAINS'] = req.context['domains']
         jinja.request['ROLES'] = req.context['roles']

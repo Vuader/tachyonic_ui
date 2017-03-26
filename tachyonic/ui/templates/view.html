@@ -1,6 +1,11 @@
 {% if save_url %}
     <form id='tview' enctype='multipart/form-data' method="post" novalidate role="form" data-url="{{ save_url }}" data-name="{{ title }}" data-save="true">
+        <input type="hidden" name="save" value="True">
         {{ content }}
+        {% if form_extra %}
+            <div style="width:100%;clear:both;"></div>
+            {{ form_extra }}
+        {% endif %}
     </form>
     <div style="width:100%;clear:both;"></div>
     {% if extra %}
@@ -9,7 +14,11 @@
     <div style="width:100%;clear:both;"></div>
 {% elif created_url %}
     <form id='tview' enctype='multipart/form-data' method="post" novalidate role="form" data-url="{{ created_url }}" data-name="{{ title }}">
-    {{ content }}
+        {{ content }}
+        {% if form_extra %}
+            <div style="width:100%;clear:both;"></div>
+            {{ form_extra }}
+        {% endif %}
     </form>
     <div style="width:100%;clear:both;"></div>
     {% if extra %}
@@ -18,7 +27,11 @@
     <div style="width:100%;clear:both;"></div>
 {% elif view_form %}
     <form id='tview' enctype='multipart/form-data' method="post" novalidate role="form" disabled onsubmit='return false;'>
-    {{ content }}
+        {{ content }}
+        {% if form_extra %}
+            <div style="width:100%;clear:both;"></div>
+            {{ form_extra }}
+        {% endif %}
     </form>
     <div style="width:100%;clear:both;"></div>
     {% if extra %}
@@ -27,6 +40,11 @@
     {% endif %}
 {% else %}
     {{ content }}
+    <div style="width:100%;clear:both;"></div>
+    {% if form_extra %}
+        <div style="width:100%;clear:both;"></div>
+        {{ form_extra }}
+    {% endif %}
     <div style="width:100%;clear:both;"></div>
     {% if extra %}
         {{ extra }}

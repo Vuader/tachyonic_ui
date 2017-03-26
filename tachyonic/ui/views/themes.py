@@ -2,22 +2,51 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import logging
+import traceback
 from collections import OrderedDict
+from copy import deepcopy
+import base64
 
 from tachyonic import app
 from tachyonic import router
+from tachyonic import jinja
 from tachyonic.neutrino import constants as const
+from tachyonic.neutrino import exceptions
+from tachyonic.client import Client
+
+from tachyonic.ui.views import ui
+from tachyonic.ui.views.select import select
+from tachyonic.ui.views.datatable import datatable
+from tachyonic.ui.models.themes import Theme as ThemeModel
+from tachyonic.ui import menu
 
 log = logging.getLogger(__name__)
 
+menu.admin.add('/System/Themes','/themes','themes:admin')
 
 @app.resources()
 class Themes(object):
     def __init__(self):
-        router.add(const.HTTP_GET, '/css', self.get, 'tachyonic:public')
-
-    def get(self, req, resp):
-        resp.headers['Content-Type'] = const.TEXT_CSS
+        router.add(const.HTTP_GET, '/image/{image}', self.images)
+        router.add(const.HTTP_GET, '/image/{theme_id}/{image}', self.images)
+        router.add(const.HTTP_GET, '/css', self.get)
+        router.add(const.HTTP_GET, '/themes', self.themes, 'themes:admin')
+        router.add(const.HTTP_GET, '/themes/view/{theme_id}', self.themes,
+                   'themes:admin')
+        router.add(const.HTTP_GET, '/themes/create', self.create,
+                   'themes:admin')
+        router.add(const.HTTP_POST, '/themes/create', self.create,
+                   'themes:admin')
+        router.add(const.HTTP_GET,
+                   '/themes/edit/{theme_id}', self.edit,
+                   'themes:admin')
+        router.add(const.HTTP_POST,
+                   '/themes/edit/{theme_id}', self.edit,
+                   'themes:admin')
+        # DELETE USERS
+        router.add(const.HTTP_GET,
+                   '/themes/delete/{theme_id}', self.delete,
+                   'themes:admin')
 
         app_config = app.config.get('application')
         static = app_config.get('static', '').rstrip('/')
@@ -390,14 +419,221 @@ class Themes(object):
         self.css['footer:before'] = {}
         self.css['footer:before']['content'] = "\"Tachyon Framework - Copyright (c) 2016 to 2017, Christiaan Frans Rademan, Allan Swanepoel, Dave Kruger. All rights resevered. BSD3-Clause License\""
         self.css['footer:after'] = {}
-        app.context['css'] = self.css
+        self.css['.search-bar-box']['min-width'] = '40%'
+        self.css['.tenant-bar-box']['min-width'] = '50%'
+
+    def images(self, req, resp, image, theme_id=None):
+        api = Client(req.context['restapi'])
+        headers, response = api.execute(const.HTTP_GET, "/v1/theme/%s/images" % (theme_id,))
+        if image.lower() == 'logo':
+            img = response['logo']
+            img_type = response['logo_type']
+            img_name = response['logo_name']
+            img_timestamp = response['logo_timestamp']
+
+        if image.lower() == 'background':
+            img = response['background']
+            img_type = response['background_type']
+            img_name = response['background_name']
+            img_timestamp = response['background_timestamp']
+
+        if image.lower() == 'background' or image.lower() == 'logo':
+            if img is not None and img != '':
+                img = base64.b64decode(img)
+                resp.headers['content-type'] = img_type
+                return img
+
+    def themes(self, req, resp, theme_id=None):
+        if theme_id is None:
+            fields = OrderedDict()
+            fields['domain'] = 'Domain'
+            fields['name'] = 'Site Name'
+            dt = datatable(req, 'themes', '/v1/themes',
+                           fields, view_button=True, service=False)
+            ui.view(req, resp, content=dt, title='Themes')
+        else:
+            api = Client(req.context['restapi'])
+            headers, response = api.execute(const.HTTP_GET, "/v1/theme/%s" % (theme_id,))
+            headers, sheet = api.execute(const.HTTP_GET, "/v1/theme/%s/css" %
+                                           (theme_id,))
+
+            if response['logo_name'] is not None and response['logo_name'] != '':
+                logo = True
+            else:
+                logo = False
+
+            if response['background_name'] is not None and response['background_name'] != '':
+                background = True
+            else:
+                background = False
+
+            css_t = jinja.get_template('tachyonic.ui/css.html')
+            images_t = jinja.get_template('tachyonic.ui/images.html')
+            extra = images_t.render(theme_id=theme_id,
+                                    background=background,
+                                    readonly=True,
+                                    logo=logo)
+            extra += css_t.render(tags={},
+                                 element=None,
+                                 sheet=sheet,
+                                 theme_id=theme_id,
+                                 readonly=True)
+            form = ThemeModel(response, validate=False, readonly=True)
+            ui.view(req, resp, content=form,
+                    id=theme_id, title='View Theme',
+                    extra=extra,
+                    view_form=True)
+
+    def create(self, req, resp):
+        if req.method == const.HTTP_POST:
+            try:
+                form = ThemeModel(req.post, validate=True)
+                api = Client(req.context['restapi'])
+                headers, response = api.execute(const.HTTP_POST, "/v1/theme", form)
+                if 'id' in response:
+                    id = response['id']
+                    self.themes(req, resp, theme_id=id)
+            except exceptions.HTTPBadRequest as e:
+                form = ThemeModel(req.post, validate=False)
+                ui.create(req, resp, content=form, title='Create Theme', error=[e])
+        else:
+            form = ThemeModel(req.post, validate=False)
+            ui.create(req, resp, content=form, title='Create Theme')
+
+    def delete(self, req, resp, theme_id=None):
+        api = Client(req.context['restapi'])
+        headers, response = api.execute(const.HTTP_DELETE, "/v1/theme/%s" % (theme_id,))
+        self.view(req, resp)             
+
+    def css_update(self, req, theme_id):
+        api = Client(req.context['restapi'])
+        element = req.post.getlist('element')
+        delete = req.query.get('delete')
+        property = req.post.getlist('property')
+        value = req.post.getlist('value')
+        url = "/v1/css"
+        url += "/%s" % (theme_id,)
+        if delete is not None:
+            obj = {}
+            del_e, del_p = delete.split(",")
+            obj['del_element'] = del_e
+            obj['del_property'] = del_p
+            headers, response = api.execute(const.HTTP_PUT,
+                                            url, obj=obj)
+        css = []
+        for i, e in enumerate(element):
+            css.append([ e, property[i], value[i] ])
+            headers, response = api.execute(const.HTTP_PUT,
+                                            url, obj=css)
+
+    def images_update(self, req, theme_id):
+        api = Client(req.context['restapi'])
+        url = "/v1/images"
+        url += "/%s" % (theme_id,)
+        logo = req.post.getfile('logo')
+        delete = req.query.get('delete_image')
+        background = req.post.getfile('background')
+        upload = {}
+        if logo is not None:
+            name, mtype, data = logo
+            data = base64.b64encode(data)
+            upload['logo'] = {}
+            upload['logo']['name'] = name
+            upload['logo']['type'] = mtype
+            upload['logo']['data'] = data
+        if background is not None:
+            name, mtype, data = background
+            data = base64.b64encode(data)
+            upload['background'] = {}
+            upload['background']['name'] = name
+            upload['background']['type'] = mtype
+            upload['background']['data'] = data
+        if logo is not None or background is not None:
+            headers, response = api.execute(const.HTTP_PUT,
+                                            url, obj=upload)
+        if delete is not None:
+            if delete == 'logo':
+                url += "/logo"
+            elif delete == "background":
+                url += "/background"
+            headers, response = api.execute(const.HTTP_DELETE,
+                                            url)
+
+    def edit(self, req, resp, theme_id=None):
+        save = req.post.get('save', False)
+        if req.method == const.HTTP_POST and save is not False:
+            form = ThemeModel(req.post, validate=True, readonly=True)
+            api = Client(req.context['restapi'])
+            headers, response = api.execute(const.HTTP_PUT, "/v1/theme/%s" %
+                                            (theme_id,), form)
+            self.css_update(req, theme_id)
+            self.images_update(req, theme_id)
+        else:
+            self.css_update(req, theme_id)
+            self.images_update(req, theme_id)
+            api = Client(req.context['restapi'])
+            headers, response = api.execute(const.HTTP_GET, "/v1/theme/%s" % (theme_id,))
+            domain = response['domain']
+            form = ThemeModel(response, validate=False)
+            if response['logo_name'] is not None and response['logo_name'] != '':
+                logo = True
+            else:
+                logo = False
+
+            if response['background_name'] is not None and response['background_name'] != '':
+                background = True
+            else:
+                background = False
+
+            tags = {}
+            for element in self.css:
+                tags[element] = element
+            css_t = jinja.get_template('tachyonic.ui/css.html')
+            images_t = jinja.get_template('tachyonic.ui/images.html')
+            element = select(req, 'element',source='tags')
+            headers, sheet = api.execute(const.HTTP_GET, "/v1/theme/%s/css" %
+                                           (theme_id,))
+            extra = images_t.render(theme_id=theme_id,
+                                    background=background,
+                                    domain=domain,
+                                    logo=logo)
+            extra += css_t.render(tags=tags,
+                                  element=element,
+                                  sheet=sheet,
+                                  theme_id=theme_id)
+            ui.edit(req, resp,
+                    content=form,
+                    id=theme_id,
+                    title='Edit Theme',
+                    extra=extra)
+
+    def get(self, req, resp):
+        resp.headers['Content-Type'] = const.TEXT_CSS
+
+        sheet = deepcopy(self.css)
+
+        try:
+            api = Client(req.context['restapi'])
+            headers, custom = api.execute(const.HTTP_GET, "/v1/theme/%s/css" %
+                                          (req.get_host(),))
+            headers, images = api.execute(const.HTTP_GET, "/v1/theme/%s/images" %
+                                          (req.get_host(),))
+            if req.context['custom_background'] is True:
+                sheet['body']['background-image'] = "url(\"%s/image/%s/background\")" % (req.app, req.get_host())
+
+            for element in custom:
+                if element not in sheet:
+                    sheet[element] = {}
+                for property in custom[element]:
+                    sheet[element][property] = custom[element][property]
+        except Exception as e:
+            trace = str(traceback.format_exc())
+            log.error("Unable to retrieve theme %s\n%s" % (e, trace))
+
 
         if req.is_mobile():
-            self.css['.search-bar-box']['width'] = '100%'
-            self.css['.tenant-bar-box']['min-width'] = '100%'
-        else:
-            self.css['.search-bar-box']['min-width'] = '40%'
-            self.css['.tenant-bar-box']['min-width'] = '50%'
+            sheet['.search-bar-box']['width'] = '100%'
+            sheet['.tenant-bar-box']['min-width'] = '100%'
 
         def css(d, tab=0):
             spacer = "    " * tab
@@ -410,5 +646,5 @@ class Themes(object):
                     val = "%s;" % (d[v].rstrip(';'),)
                     resp.write("%s%s: %s\n" % (spacer, v, val))
 
-        css(self.css)
+        css(sheet)
 

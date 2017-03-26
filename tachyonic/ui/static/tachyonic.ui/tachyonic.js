@@ -5,6 +5,19 @@
   */
 $.fn.dataTable.ext.errMode = 'throw';
 
+
+/**
+  * Reload css for theme updates
+  */
+function reloadStylesheets() {
+	var queryString = '?reload=' + new Date().getTime();
+    $('link[rel="stylesheet"]').each(function () {
+    	this.href = this.href.replace(/\?.*|$/, queryString);
+    });
+    return false;
+}
+
+
 /**
   * Function to load content into div and submit form
   *
@@ -53,24 +66,32 @@ function ajax_query(element, url, form=null, form_save=false, load_window=false,
                     e.preventDefault()
                 });
                 $("#window_content a").on("click", function(e) {
-                    link(this);
-                    e.preventDefault()
+                    if ("url" in this.dataset) {
+                        link(this);
+                        e.preventDefault()
+                    }
                 });
                 $("#service a").on("click", function(e) {
-                    link(this);
-                    e.preventDefault()
+                    if ("url" in this.dataset) {
+                        link(this);
+                        e.preventDefault()
+                    }
                 });
                 $("#service button").on("click", function(e) {
-                    link(this);
-                    e.preventDefault()
+                    if ("url" in this.dataset) {
+                        link(this);
+                        e.preventDefault()
+                    }
                 });
                 $("#window_content form").submit(function( e )  {
                     link(this);
                     e.preventDefault()
                 });
                 $("#service form").submit(function( e )  {
-                    link(this);
-                    e.preventDefault()
+                    if ("url" in this.dataset) {
+                        link(this);
+                        e.preventDefault()
+                    }
                 });
             }
             else
@@ -99,6 +120,28 @@ function ajax_query(element, url, form=null, form_save=false, load_window=false,
         }
     });
     return false;
+}
+
+/**
+  * Clear Assign
+  */
+function clear_assign() {
+    document.getElementById('tenant_assignment').value = '';
+    document.getElementById('tenant_id').value = '';
+}
+
+/**
+  * Delete role used by users
+  */
+function delete_role(domain,tenant_id,role) {
+    document.getElementById('domain').value = domain;
+    if (tenant_id == 'None') {
+        document.getElementById('tenant_id').value = '';
+    } else {
+        document.getElementById('tenant_id').value = tenant_id;
+    }
+    document.getElementById('remove').value = "True";
+    document.getElementById('role').value = role;
 }
 
 /**
@@ -292,7 +335,7 @@ function link(element) {
                 document.getElementById('window').style.display = "block";
             }   
         }
-        return false
+        return false;
     }
 }
 
