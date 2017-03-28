@@ -100,8 +100,20 @@ class Tachyon(object):
 
     def home(self, req, resp):
         if req.session.get('token') is not None:
+            tenant_name = ''
+            tenant_selected = False
+            if ('tenant_id' in req.context and
+                    req.context['tenant_id'] is not None):
+                api = Client(req.context['restapi'])
+                server_headers, response = api.execute(const.HTTP_GET,
+                                                       '/v1/tenant')
+                if 'id' in response:
+                    tenant_name = response['name']
+                    tenant_selected = True
+
             t = jinja.get_template('tachyonic.ui/dashboard.html')
-            resp.body = t.render()
+            resp.body = t.render(tenant_selected=tenant_selected, open_tenant=tenant_name)
+
         else:
             router.view('/login', const.HTTP_POST, req, resp)
 

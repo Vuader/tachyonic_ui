@@ -19,13 +19,23 @@
     <script src="{{STATIC}}/tachyonic.ui/tachyonic.js"></script>
     <link rel="stylesheet" href="{{SITE}}/css" />
     <link rel="stylesheet" href="{{STATIC}}/custom.css" />
+    {% if CUSTOM_LOGO %}
+    <link rel="icon" href="{{SITE}}/image/{{THEME_DOMAIN}}/logo">
+    {% else %}
     <link rel="icon" href="{{STATIC}}/tachyonic.ui/images/tachyon-sm.png">
+    {% endif %}
 {{ HTML_ASSETS }}
-    <title>{{TITLE}}</title>
+    <title>{{NAME}}</title>
 </head>
 <body>
 {% if LOGIN %}
 <script>
+    {% if tenant_selected %}
+    tenant_selected = true;
+    $( document ).ready(function() {
+        document.getElementById('open_tenant').value = "{{ open_tenant }}";
+    });
+    {% endif %}
     var login = true;
 </script>
 {% else %}
@@ -45,14 +55,18 @@ $( document ).ready(function() {
     <div class="navbar-wrapper menu">
         <div class="container">
             <div class="navbar-header">
+                {% if CUSTOM_LOGO %}
+                <a href="#" class="navbar-left pull-left"><img src="{{SITE}}/image/{{THEME_DOMAIN}}/logo" height="50px" id="nav_logo"></a>
+                {% else %}
+                <a href="#" class="navbar-left pull-left"><img src="{{STATIC}}/tachyonic.ui/images/tachyon-sm.png" height="50px" id="nav_logo"></a>
+                {% endif %}
+                <a id="SITE_TITLE" class="navbar-brand navbar-left" href="{{SITE}}">{{ NAME }}</a>
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a href="#" class="navbar-left pull-left"><img src="{{STATIC}}/tachyonic.ui/images/tachyon-sm.png"></a>
-                <a class="navbar-brand" href="#">{{ NAME }}</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <div id="topmenu">
@@ -85,11 +99,15 @@ $( document ).ready(function() {
                     <input id='open_tenant' class="form-control" readonly style="width: 290px" placeholder="Current Open Tenant">
                 </div>
             </form>
-            <a href="{{SITE}}" class="btn btn-danger" class="pull-right">Close</a>
+            <form class="form-inline pull-left" action="{{SITE}}" method="post">
+                <input type="hidden" name="X-Tenant-Id" value="NULL">
+                <button type="submit" class="btn btn-danger" class="pull-right">Close</a>
+            </form>
         </div>
         <div class="pull-right search-bar-box">
             <form class="form-inline pull-left" method="post" action="{{ SITE }}/">
                 <div class="form-group">
+                    <input type="hidden" name="X-Tenant-Id" value="NULL">
                     <select class="form-control" name="X-Domain" onchange="this.form.submit()">
                         {% for d in DOMAINS %}
                         <option value='{{ d[0] }}' {% if REQUEST.context['domain_id'] == d[0] %}selected{% endif %}  >{{ d[1] }}</option>
@@ -98,7 +116,7 @@ $( document ).ready(function() {
                 </div>
             </form>
             <form id="searchForm" class="form-inline pull-right" method="post" action="{{ SITE }}/search" onsubmit="link(this); return false;" data-url="{{SITE}}/search" data-name="Search Tenants">
-                <div class="form-group">
+                <div class="form-group pull-left">
                     {{ SEARCH }}
                 </div>
                 <button type="submit" class="btn btn-success">Search</button>
@@ -195,7 +213,11 @@ $( document ).ready(function() {
         </div>
         <div class="col-sm-9">
             <div class="block">
-                <div class="block_title" id="title">{{TITLE}}</div>
+                {% if title %}
+                <div class="block_title" id="title">{{title}}</div>
+                {% else %}
+                <div class="block_title" id="title">{{NAME}}</div>
+                {% endif %}
                 <div class="block_content" id="service">
                     {% block content %}{% endblock %}
                 </div>

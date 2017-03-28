@@ -1,0 +1,105 @@
+<H2>Custom Stylesheet</H2>
+<script>
+    var tags = [
+    {% for i in tags %}
+    '{{ i }}',
+    {% endfor %}
+    '.'
+    ];
+</script>
+<div id="stylesheets">
+    <form id='css' enctype='multipart/form-data' method="post" novalidate role="form" data-url="{{SITE}}/themes/edit/{{theme_id}}">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Element
+                    </th>
+                    <th>
+                        Property
+                    </th>
+                    <th>
+                        Value
+                    </th>
+                    {% if not readonly %}
+                    <th>
+                        &nbsp;
+                    </th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+            {% for element in sheet %}
+                {% for property in sheet[element] %}
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <input class='form-control' readonly disabled value="{{ element }}">
+                            <input type="hidden" name="element" value="{{ element }}">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <input class='form-control' readonly disabled value="{{ property }}">
+                            <input type="hidden" name="property" value="{{ property }}">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                        {% if not readonly %}
+                            <input class='form-control' name="value" value="{{ sheet[element][property] }}">
+                        {% else %}
+                            <input class='form-control' name="value" disabled readonly value="{{ sheet[element][property] }}">
+                        {% endif %}
+                        </div>
+                    </td>
+                    {% if not readonly %}
+                    <td>
+                        <a href="#" data-url="{{SITE}}/themes/edit/{{theme_id}}?delete={{element}},{{property}}" data-confirm="Delete {{element}}.{{property}}" class="btn btn-danger" type="submit">Remove</a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            {% endfor %}
+            {% if not readonly %}
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            {{ element }}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <input class='form-control' name='property'>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <input class='form-control' name='value'>
+                        </div>
+                    </td>
+                    <td>
+                        <input class="btn btn-warning" type="submit" value="Add/Update">
+                    </td>
+                </tr>
+            {% endif %}
+            {% if not readonly %}
+                <tr>
+                    <td>
+                        &nbsp;
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                    <td>
+                        <a href="#" class="btn btn-success" onclick="reloadStylesheets()">Refresh CSS</button>
+                    </td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+     </form>
+</div>
