@@ -17,7 +17,8 @@ log = logging.getLogger(__name__)
 
 def datatable(req, table_id, url,
               fields, width='100%', view_button=False,
-              service=False, endpoint=None):
+              checkbox=False, service=False,
+              endpoint=None, id_field=None):
     dom = Dom()
     table = dom.create_element('table')
     table.set_attribute('id', table_id)
@@ -31,11 +32,17 @@ def datatable(req, table_id, url,
         th = tr.create_element('th')
         th.append(fields[field])
         api_fields.append("%s=%s" % (field, fields[field]))
-    if view_button is True:
+    if view_button is True or checkbox is True:
         th = tr.create_element('th')
         th.append('&nbsp;')
         api_fields.append("%s=%s" % ('id', 'id'))
-    id_field_no = len(api_fields) - 1
+    if id_field is None:
+      id_field_no = len(api_fields) - 1
+    else:
+      id_field_no = id_field
+
+    field_name = api_fields[id_field_no]
+    field_name = field_name.split('=')[0]
     api_fields = ",".join(api_fields)
 
     tfoot = table.create_element('tfoot')
@@ -43,7 +50,7 @@ def datatable(req, table_id, url,
     for field in fields:
         th = tr.create_element('th')
         th.append(fields[field])
-    if view_button is True:
+    if view_button is True or checkbox is True:
         th = tr.create_element('th')
         th.append('&nbsp;')
 
@@ -66,8 +73,7 @@ def datatable(req, table_id, url,
         js += " '<button class=\"view_button\"></button>'"
         js += "}"
         js += "]"
-    js += "} );"
-    if view_button is True:
+        js += "} );"
         res = ui.resource(req)
         url = req.get_url()
         js += "$('#%s tbody')" % (table_id,)
@@ -79,7 +85,23 @@ def datatable(req, table_id, url,
         else:
             js += "ajax_query(\"#service\","
             js += "\"%s/%s/view/\"+data[%s]);" % (req.get_app(), res, id_field_no)
-        js += "} );"
+    elif checkbox is True:
+        js += ",\"columnDefs\": ["
+        js += "{\"targets\": -1,"
+        js += "\"data\": null,"
+        js += "\"width\": \"26px\","
+        js += "\"orderable\": false,"
+        js += "\"render\":"
+        js += " function ( data, type, row ) {"
+        js += "if ( type === 'display' ) {"
+        js += "return '<input type=\"checkbox\" "
+        js += "name=\"%s\" value=\"' + row[%s] + '\">';" % (field_name, id_field_no)
+        js += "}; return data;"
+        js += "}"
+        js += "}"
+        js += "]"
+
+    js += "} );"
 
     js += "} );"
     script = dom.create_element('script')
@@ -128,7 +150,6 @@ class DataTables(object):
         response_headers, result = api.execute(const.HTTP_GET, url,
                                                headers=request_headers,
                                                endpoint=endpoint)
-
         recordsTotal = int(response_headers.get('X-Total-Rows',0))
         recordsFiltered = int(response_headers.get('X-Filtered-Rows',0))
         response = {}
