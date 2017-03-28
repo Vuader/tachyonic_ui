@@ -5,6 +5,19 @@
   */
 $.fn.dataTable.ext.errMode = 'throw';
 
+
+/**
+  * Reload css for theme updates
+  */
+function reloadStylesheets() {
+	var queryString = '?reload=' + new Date().getTime();
+    $('link[rel="stylesheet"]').each(function () {
+    	this.href = this.href.replace(/\?.*|$/, queryString);
+    });
+    return false;
+}
+
+
 /**
   * Function to load content into div and submit form
   *
@@ -13,7 +26,7 @@ $.fn.dataTable.ext.errMode = 'throw';
   * @param string form_id Serialize Data from Form to post
   *
   */
-function ajax_query(element, url, form=null, form_save=false, load_window=false) {
+function ajax_query(element, url, form=null, form_save=false, load_window=false, save='Successfully saved', headers={}) {
     $('html, body').animate({ scrollTop: 0 }, 'fast');
     document.getElementById('confirm').style.display = 'none';
     if (typeof(form) !== 'undefined' && form != null) {
@@ -43,6 +56,7 @@ function ajax_query(element, url, form=null, form_save=false, load_window=false)
         contentType: ct,
         processData: pd,
         data: submit,
+        headers: headers,
         success: function(result) {
             if (form_save == false) {
                 $(element).html(result);
@@ -52,29 +66,37 @@ function ajax_query(element, url, form=null, form_save=false, load_window=false)
                     e.preventDefault()
                 });
                 $("#window_content a").on("click", function(e) {
-                    link(this);
-                    e.preventDefault()
+                    if ("url" in this.dataset) {
+                        link(this);
+                        e.preventDefault()
+                    }
                 });
                 $("#service a").on("click", function(e) {
-                    link(this);
-                    e.preventDefault()
+                    if ("url" in this.dataset) {
+                        link(this);
+                        e.preventDefault()
+                    }
                 });
                 $("#service button").on("click", function(e) {
-                    link(this);
-                    e.preventDefault()
+                    if ("url" in this.dataset) {
+                        link(this);
+                        e.preventDefault()
+                    }
                 });
                 $("#window_content form").submit(function( e )  {
                     link(this);
                     e.preventDefault()
                 });
                 $("#service form").submit(function( e )  {
-                    link(this);
-                    e.preventDefault()
+                    if ("url" in this.dataset) {
+                        link(this);
+                        e.preventDefault()
+                    }
                 });
             }
             else
             {
-                success("Succesfully saved")
+                success(save)
             }
             done_loading()
         },
@@ -98,6 +120,28 @@ function ajax_query(element, url, form=null, form_save=false, load_window=false)
         }
     });
     return false;
+}
+
+/**
+  * Clear Assign
+  */
+function clear_assign() {
+    document.getElementById('tenant_assignment').value = '';
+    document.getElementById('tenant_id').value = '';
+}
+
+/**
+  * Delete role used by users
+  */
+function delete_role(domain,tenant_id,role) {
+    document.getElementById('domain').value = domain;
+    if (tenant_id == 'None') {
+        document.getElementById('tenant_id').value = '';
+    } else {
+        document.getElementById('tenant_id').value = tenant_id;
+    }
+    document.getElementById('remove').value = "True";
+    document.getElementById('role').value = role;
 }
 
 /**
@@ -291,19 +335,58 @@ function link(element) {
                 document.getElementById('window').style.display = "block";
             }   
         }
-        return false
+        return false;
     }
 }
+
+function open_tenant(site, id) {
+    headers = { "X-Tenant-Id": id };
+    ajax_query("#service", site + "/tenant", form=null, form_save=false, load_window=false, save='<B>Open Tenant Account</B>', headers=headers);
+    return false;
+}
+
+function close_tenant(site) {
+    if (tenant_selected == true) {
+        headers = { "X-Tenant-Id": "NULL" };
+        ajax_query("#service", site + "/", form=null, form_save=true, load_window=false, save='<B>Closed Tenant Account</B>', headers=headers);
+        tenant_selected = false;
+        document.getElementById('open_tenant').value = ''
+        document.getElementById('service').innerHTML = '<H1>Tenant Closed</H1>'
+    }
+    else {
+        warning('<B>Account already closed</B>')
+    }
+    return false;
+}
+
+function open_domain(site, id) {
+    headers = { "X-Tenant-Id": "NULL", "X-Domain": id };
+    ajax_query("#service", site + "/", form=null, form_save=true, load_window=false, save='<B>Domain selected</B>', headers=headers);
+    tenant_selected = false;
+    document.getElementById('open_tenant').value = ''
+    document.getElementById('service').innerHTML = '<H1>Switched domain</H1>'
+
+    return false;
+}
+
+
+tenant_selected = false;
 
 /**
   * Open service/customer view for menu
   */
 function service(a) {
-    document.getElementById('service').innerHTML = '';
-    ajax_query("#service", a.href); 
-    document.getElementById('title').innerHTML = a.innerHTML;
-    document.getElementById('locked').style.display = "none";
-    document.getElementById('window').style.display = "none";
+    if (tenant_selected == true) {
+        document.getElementById('service').innerHTML = '';
+        ajax_query("#service", a.href); 
+        document.getElementById('title').innerHTML = a.innerHTML;
+        document.getElementById('locked').style.display = "none";
+        document.getElementById('window').style.display = "none";
+    }
+    else
+    {
+        warning('<B>Please select tenant account</B>')
+    }
     return false
 }
 
@@ -474,12 +557,11 @@ $( document ).ready(function() {
 /**
   * Inactive user auto logout
   */
-var timeout = 1200;
+var timeout = 600
 var idleTime = 0;
 $(document).ready(function () {
     //Increment the idle time counter every second
     var idleInterval = setInterval(timerIncrement, 1000); 
-
     //Zero the idle timer on mouse movement.
     $(this).mousemove(function (e) {
         l = document.getElementById('logout').style.display
