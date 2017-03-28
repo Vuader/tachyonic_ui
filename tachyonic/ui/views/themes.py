@@ -52,6 +52,7 @@ class Themes(object):
         static = app_config.get('static', '').rstrip('/')
         images = "%s/tachyonic.ui/images" % (static,)
         self.css = OrderedDict()
+        app.context['css'] = self.css
         self.css['.modal-body'] = {}
         self.css['.modal-body']['overflow-y'] = 'scroll'
         self.css['.navbar-wrapper'] = {}

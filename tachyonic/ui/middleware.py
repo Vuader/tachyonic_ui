@@ -30,8 +30,11 @@ class Globals(object):
         jinja.globals['NAME'] = self.app_config.get('name', 'Tachyon UI')
 
     def pre(self, req, resp):
-        req.context['restapi'] = app.config.get("tachyon").get("restapi","http://127.0.0.1")
         try:
+            if app.config.get("tachyon").get("restapi") is None:
+                raise exceptions.HTTPInternalServerError('settings.cfg',
+                                                         'Missing [tachyon] restapi')
+            req.context['restapi'] = app.config.get("tachyon").get("restapi","http://127.0.0.1")
             api = Client(req.context['restapi'])
             headers, theme = api.execute(const.HTTP_GET, "/v1/theme/%s/single" %
                                           (req.get_host(),))
@@ -59,6 +62,7 @@ class Globals(object):
 class Auth(Token):
     def pre(self, req, resp):
         try:
+            self.interface = 'ui'
             if req.view is not None:
                 super(Auth, self).pre(req, resp)
                 resp.headers['Content-Type'] = const.TEXT_HTML
@@ -70,7 +74,7 @@ class Auth(Token):
                 raise ui_exceptions.Authentication(e)
             else:
                 self.init(req, resp)
-                raise exceptions.HTTPInternalServerError("RESTAPI Offline", e)
+                raise exceptions.HTTPInternalServerError("RESTAPI Offline %s" % e.title, e)
 
     def init(self, req, resp):
         logout = req.query.get('logout')

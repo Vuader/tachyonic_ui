@@ -44,13 +44,13 @@ class Menu():
                     if len(item) > 1:
                         n = item[0]
                         if n not in items:
-                            items[n] = {}
+                            items[n] = OrderedDict()
                         del item[0]
                         m(items[n])
                     else:
                         n = item[0]
                         if n not in items:
-                            items[n] = {}
+                            items[n] = OrderedDict()
                         items[n]['_name'] = n
                         items[n]['_link'] = link
                         items[n]['_view'] = view
@@ -88,7 +88,6 @@ class Menu():
 
                         _menu(items[i], sub, submenu=True)
 
-        log.error(json.dumps(self.items,indent=4))
         _menu(menu_items, root, submenu=False)
 
         if str(root) == '':
