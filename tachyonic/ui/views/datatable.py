@@ -116,11 +116,7 @@ class DataTables(object):
                     order_field, order_field_name = api_field.split('=')
                     orderby = "%s %s" % (order_field, order)
                 count += 1
-        if endpoint:
-            config = req.config.get('endpoints')
-            api = Client(config.get(endpoint))
-        else:
-            api = Client(req.context['restapi'])
+        api = Client(req.context['restapi'])
         request_headers = {}
         request_headers['X-Pager-Start'] = start[0]
         request_headers['X-Pager-Limit'] = length[0]
@@ -130,7 +126,8 @@ class DataTables(object):
         if search[0] is not None:
             request_headers['X-Search'] = search[0]
         response_headers, result = api.execute(const.HTTP_GET, url,
-                                               headers=request_headers)
+                                               headers=request_headers,
+                                               endpoint=endpoint)
 
         recordsTotal = int(response_headers.get('X-Total-Rows',0))
         recordsFiltered = int(response_headers.get('X-Filtered-Rows',0))
