@@ -169,30 +169,30 @@ $( document ).ready(function() {
     <div class="row">
         <div class="col-sm-3">
             {% if LOGIN %}
+            {% if MENU_ACCOUNTS %}
             <div class="block menu_accounts">
                 <div class="block_title">
                     Tenant Account
                 </div>
-                <div class="block_content">
+                <div class="block_menu">
                     <ul class="nav nav-pills nav-stacked">
-                    {% if MENU_ACCOUNTS %}
                     {{ MENU_ACCOUNTS }}
-                    {% endif %}
                     </ul>
                 </div>
             </div>
+            {% endif %}
+            {% if MENU_SERVICES %}
             <div class="block menu_services">
                 <div class="block_title">
                     Services
                 </div>
-                <div class="block_content">
+                <div class="block_menu">
                     <ul class="nav nav-pills nav-stacked">
-                    {% if MENU_SERVICES %}
                     {{ MENU_SERVICES }}
-                    {% endif %}
                     </ul>
                 </div>
             </div>
+            {% endif %}
             <div class="block">
                 <div class="block_title">
                     Login

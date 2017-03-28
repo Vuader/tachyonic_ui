@@ -35,10 +35,19 @@ class Globals(object):
             api = Client(req.context['restapi'])
             headers, theme = api.execute(const.HTTP_GET, "/v1/theme/%s/single" %
                                           (req.get_host(),))
-            req.context['custom_background'] = theme['background']
-            req.context['custom_logo'] = theme['logo']
-            jinja.request['NAME'] = theme['name']
-            jinja.request['CUSTOM_LOGO'] = theme['logo']
+            if 'background' in theme:
+                req.context['custom_background'] = theme['background']
+            else:
+                req.context['custom_background'] = None
+
+            if 'logo' in theme:
+                req.context['custom_logo'] = theme['logo']
+            else:
+                req.context['custom_logo'] = None
+            if 'name' in theme:
+                jinja.request['NAME'] = theme['name']
+            if 'CUSTOM_LOGO' in theme:
+                jinja.request['CUSTOM_LOGO'] = theme['logo']
             jinja.request['THEME_DOMAIN'] = req.get_host()
         except Exception as e:
             trace = str(traceback.format_exc())

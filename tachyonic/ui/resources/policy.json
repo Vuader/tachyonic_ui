@@ -30,5 +30,8 @@
     "transmission:users": "Rule:is_user",
     "billing:admin": "Rule:is_root or Rule:is_billing",
     "billing:users": "Rule:is_user",
-    "q:admin": "Rule:is_root or Rule:is_ops or Rule:is_support"
+    "queue:admin": "Rule:is_root or Rule:is_ops",
+    "queue:user": "Rule:is_root or Rule:is_ops or Rule:is_admin or Rule:is_support",
+    "nnpo:admin": "Rule:is_root or Rule:is_ops",
+    "nnpo:customer": "Rule:is_root or Rule:is_ops or Rule:is_admin or Rule:is_support"
 }

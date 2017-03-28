@@ -355,6 +355,17 @@ class Themes(object):
         self.css['div.block_content']['margin-top'] = '0px'
         self.css['div.block_content']['width'] = '100%'
         self.css['div.block_content']['overflow'] = 'hidden'
+        self.css['div.block_menu'] = {}
+        self.css['div.block_menu']['border-bottom-width'] = '0px'
+        self.css['div.block_menu']['border-left-width'] = '0px'
+        self.css['div.block_menu']['border-right-width'] = '0px'
+        self.css['div.block_menu']['border-top-width'] = '0px'
+        self.css['div.block_menu']['margin-bottom'] = '5px'
+        self.css['div.block_menu']['margin-left'] = '0px'
+        self.css['div.block_menu']['margin-right'] = '0px'
+        self.css['div.block_menu']['margin-top'] = '0px'
+        self.css['div.block_menu']['width'] = '100%'
+        self.css['div.block_menu']['overflow'] = 'visible'
         self.css['div.menu'] = {}
         self.css['div.menu']['z-index'] = '1003'
         self.css['div.menu']['position'] = 'relative'
