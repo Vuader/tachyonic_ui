@@ -49,7 +49,7 @@ class Globals(object):
                 req.context['custom_logo'] = None
             if 'name' in theme:
                 jinja.request['NAME'] = theme['name']
-            if 'CUSTOM_LOGO' in theme:
+            if 'logo' in theme:
                 jinja.request['CUSTOM_LOGO'] = theme['logo']
             jinja.request['THEME_DOMAIN'] = req.get_host()
         except Exception as e:
