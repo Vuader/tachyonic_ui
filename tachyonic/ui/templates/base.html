@@ -79,10 +79,11 @@ $( document ).ready(function() {
                 {% if LOGIN %}
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <div class="menu-icon">
-                            <img src="{{STATIC}}/tachyonic.ui/images/dude.png" data-toggle="dropdown">
-                            <ul class="dropdown-menu"><li class="nav-link"><a href="{{SITE}}/logout">Logout</a></li></ul>
-                        </div>
+                        <img src="{{STATIC}}/tachyonic.ui/images/dude.png" data-toggle="dropdown">
+                        <ul class="dropdown-menu">
+                            <li class="nav-link"><a href="{{SITE}}/logout">Logout</a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
                 {% endif %}
@@ -101,7 +102,7 @@ $( document ).ready(function() {
             </form>
             <form class="form-inline pull-left" action="{{SITE}}" method="post">
                 <input type="hidden" name="X-Tenant-Id" value="NULL">
-                <button type="submit" class="btn btn-danger" class="pull-right">Close</a>
+                <button type="submit" class="btn btn-danger" class="pull-right">Close</button>
             </form>
         </div>
         <div class="pull-right search-bar-box">

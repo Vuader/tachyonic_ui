@@ -6,7 +6,9 @@ import traceback
 from collections import OrderedDict
 from copy import deepcopy
 import base64
+from datetime import datetime
 
+from pytz import timezone
 from tachyonic import app
 from tachyonic import router
 from tachyonic import jinja
@@ -134,7 +136,7 @@ class Themes(object):
         self.css['div.auto-logout']['left'] = '10%'
         self.css['div.auto-logout']['right'] = '10%'
         self.css['div.auto-logout']['margin'] = 'auto'
-        self.css['div.auto-logout']['width'] = '1000px'
+        self.css['div.auto-logout']['width'] = '500px'
         self.css['div.auto-logout']['height'] = 'auto'
         self.css['div.auto-logout']['background-color'] = '#FFFFFF'
         self.css['div.auto-logout']['z-index'] = '1005'
@@ -163,14 +165,15 @@ class Themes(object):
         self.css['div.loading']['overflow'] = 'hidden'
         self.css['div.loading']['position'] = 'fixed'
         self.css['div.loading']['z-index'] = '5000'
-        self.css['div.loading']['top'] = '50px;'
+        self.css['div.loading']['top'] = '0;'
         self.css['div.loading']['left'] = '0'
         self.css['div.loading']['height'] = '100%'
         self.css['div.loading']['width'] = '100%'
-        self.css['div.loading']['background'] = 'rgba( 255, 255, 255, .8 )'
+        self.css['div.loading']['background'] = 'rgba( 255, 255, 255, .6 )'
         self.css['div.loading']['background'] += "url(\'%s" % (images,)
         self.css['div.loading']['background'] += '/loader.gif\')'
         self.css['div.loading']['background'] += '50% 50% no-repeat'
+
         self.css['@media (min-width: 1350px)'] = {}
         self.css['@media (min-width: 1350px)']['.container'] = {}
         self.css['@media (min-width: 1350px)']['.container']['width'] = '1300px'
@@ -453,6 +456,16 @@ class Themes(object):
             if img is not None and img != '':
                 img = base64.b64decode(img)
                 resp.headers['content-type'] = img_type
+                current = datetime.strptime(img_timestamp, "%Y/%m/%d %H:%M:%S")
+                current = current.replace(tzinfo=timezone('GMT'))
+                current = datetime.strftime(current, "%a, %d %b %Y %H:%M:%S GMT")
+                resp.headers['Last-Modified'] = str(current)
+                if 'If-Modified-Since' in req.headers:
+                    cached = req.headers['If-Modified-Since']
+                    if cached == current:
+                        resp.status = const.HTTP_304
+                    else:
+                        return img
                 return img
 
     def themes(self, req, resp, theme_id=None):
@@ -637,7 +650,10 @@ class Themes(object):
                 if element not in sheet:
                     sheet[element] = {}
                 for property in custom[element]:
-                    sheet[element][property] = custom[element][property]
+                    if custom[element][property].strip().lower() == "null":
+                        del sheet[element][property]
+                    else:
+                        sheet[element][property] = custom[element][property]
         except Exception as e:
             trace = str(traceback.format_exc())
             log.error("Unable to retrieve theme %s\n%s" % (e, trace))
