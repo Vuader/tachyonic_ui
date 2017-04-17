@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import logging
+import json
 from collections import OrderedDict
 
 from tachyonic import app
@@ -22,16 +23,16 @@ menu.admin.add('/Accounts/Roles','/roles','roles:view')
 @app.resources()
 class Roles(object):
     def __init__(self):
-        # VIEW USERS
+        # VIEW ROLES
         router.add(const.HTTP_GET,
                    '/roles',
                    self.view,
-                   'roles:view')
+                   'tachyonic:login')
         router.add(const.HTTP_GET,
                    '/roles/view/{role_id}',
                    self.view,
                    'roles:view')
-        # ADD NEW USERS
+        # ADD NEW ROLES
         router.add(const.HTTP_GET,
                    '/roles/create',
                    self.create,
@@ -40,26 +41,36 @@ class Roles(object):
                    '/roles/create',
                    self.create,
                    'roles:admin')
-        # EDIT USERS
+        # EDIT ROLES
         router.add(const.HTTP_GET,
                    '/roles/edit/{role_id}', self.edit,
                    'roles:admin')
         router.add(const.HTTP_POST,
                    '/roles/edit/{role_id}', self.edit,
                    'roles:admin')
-        # DELETE USERS
+        # DELETE ROLES
         router.add(const.HTTP_GET,
                    '/roles/delete/{role_id}', self.delete,
                    'roles:admin')
 
     def view(self, req, resp, role_id=None):
         if role_id is None:
-            fields = OrderedDict()
-            fields['name'] = 'Role'
-            fields['description'] = 'Description'
-            dt = datatable(req, 'roles', '/v1/roles',
-                           fields, view_button=True, service=False)
-            ui.view(req, resp, content=dt, title='Roles')
+            return_format = req.headers.get('X-Format')
+            if return_format == "select2":
+                api = Client(req.context['restapi'])
+                headers, response = api.execute(
+                    const.HTTP_GET, "/v1/roles/")
+                result = []
+                for r in response:
+                    result.append({'id': r['id'], 'text': r['name']})
+                return json.dumps(result, indent=4)
+            else:
+                fields = OrderedDict()
+                fields['name'] = 'Role'
+                fields['description'] = 'Description'
+                dt = datatable(req, 'roles', '/v1/roles',
+                fields, view_button=True, service=False)
+                ui.view(req, resp, content=dt, title='Roles')
         else:
             api = Client(req.context['restapi'])
             headers, response = api.execute(const.HTTP_GET, "/v1/role/%s" % (role_id,))
