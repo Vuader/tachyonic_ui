@@ -6,14 +6,14 @@ from collections import OrderedDict
 
 from tachyonic import app
 from tachyonic import router
-from tachyonic.neutrino import constants as const
-from tachyonic.neutrino import exceptions
+from tachyonic.common import constants as const
+from tachyonic.common import exceptions
 from tachyonic.client import Client
 
 from tachyonic.ui.views import ui
 from tachyonic.ui.views.datatable import datatable
 from tachyonic.ui import menu
-from tachyonic.ui.models.domains import Domain as DomainModel
+from tachyonic.api.models.domains import Domain as DomainModel
 
 log = logging.getLogger(__name__)
 

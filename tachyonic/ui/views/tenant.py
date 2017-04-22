@@ -10,7 +10,7 @@ from tachyonic.neutrino import constants as const
 from tachyonic.neutrino.web.dom import Dom
 from tachyonic.client import Client
 
-from tachyonic.ui.models.tenants import Tenant as TenantModel
+from tachyonic.api.models.tenants import Tenant as TenantModel
 from tachyonic.ui import menu
 
 log = logging.getLogger(__name__)
