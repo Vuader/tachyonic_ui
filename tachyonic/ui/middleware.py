@@ -7,14 +7,12 @@ from collections import OrderedDict
 
 from tachyonic import app
 from tachyonic import jinja
-from tachyonic.neutrino import constants as const
-from tachyonic.neutrino import exceptions
+from tachyonic.common import constants as const
 from tachyonic.client.middleware import Token
-from tachyonic.client import exceptions as client_exceptions
-from tachyonic.neutrino import html_assets
+from tachyonic.common import exceptions
 from tachyonic.client import Client
 
-from tachyonic.ui import exceptions as ui_exceptions
+from tachyonic.ui import html_assets
 from tachyonic.ui.auth import clear_session
 from tachyonic.ui.menu import render_menus
 from tachyonic.ui.views.select import select
@@ -66,12 +64,12 @@ class Auth(Token):
             if req.view is not None:
                 super(Auth, self).pre(req, resp)
                 resp.headers['Content-Type'] = const.TEXT_HTML
-        except client_exceptions.ClientError as e:
+        except exceptions.ClientError as e:
             resp.headers['Content-Type'] = const.TEXT_HTML
             if e.status != const.HTTP_500:
                 clear_session(req)
                 self.init(req, resp)
-                raise ui_exceptions.Authentication(e)
+                raise exceptions.Authentication(e)
             else:
                 self.init(req, resp)
                 raise exceptions.HTTPInternalServerError("RESTAPI Offline %s" % e.title, e)
@@ -109,3 +107,7 @@ class Auth(Token):
         else:
             clear_session(req)
         render_menus(req)
+
+    def post(self, req, resp):
+        if hasattr(req.context, 'login') and req.context['login'] is False:
+            req.session.clear()

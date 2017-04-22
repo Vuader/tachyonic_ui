@@ -7,10 +7,10 @@ import re
 from tachyonic import app
 from tachyonic import router
 from tachyonic import jinja
-from tachyonic.neutrino import exceptions as exceptions
-from tachyonic.neutrino import constants as const
+from tachyonic.common import exceptions as exceptions
+from tachyonic.common import constants as const
 from tachyonic.client import Client
-from tachyonic.client.exceptions import ClientError
+from tachyonic.common.exceptions import ClientError
 
 from tachyonic.ui.auth import clear_session
 from tachyonic.ui.auth import authenticated
@@ -142,7 +142,6 @@ class Tachyon(object):
                     error.append(msg)
 
         if req.session.get('token') is not None:
-            # resp.view('/', const.HTTP_GET)
             resp.redirect('/')
         else:
             t = jinja.get_template('tachyonic.ui/login.html')

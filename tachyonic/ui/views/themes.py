@@ -12,14 +12,14 @@ from pytz import timezone
 from tachyonic import app
 from tachyonic import router
 from tachyonic import jinja
-from tachyonic.neutrino import constants as const
-from tachyonic.neutrino import exceptions
+from tachyonic.common import constants as const
+from tachyonic.common import exceptions
 from tachyonic.client import Client
 
 from tachyonic.ui.views import ui
 from tachyonic.ui.views.select import select
 from tachyonic.ui.views.datatable import datatable
-from tachyonic.ui.models.themes import Theme as ThemeModel
+from tachyonic.api.models.themes import Theme as ThemeModel
 from tachyonic.ui import menu
 
 log = logging.getLogger(__name__)
@@ -432,7 +432,7 @@ class Themes(object):
         self.css['footer']['z-index'] = '1010'
         self.css['footer']['width'] = '100%'
         self.css['footer:before'] = {}
-        self.css['footer:before']['content'] = "\"Tachyon Framework - Copyright (c) 2016 to 2017, Christiaan Frans Rademan, Allan Swanepoel, Dave Kruger. All rights resevered. BSD3-Clause License\""
+        self.css['footer:before']['content'] = "\"Tachyonic Framework - Copyright (c) 2016 to 2017, Christiaan Frans Rademan, Allan Swanepoel, Dave Kruger. All rights resevered. BSD3-Clause License\""
         self.css['footer:after'] = {}
         self.css['.search-bar-box']['min-width'] = '40%'
         self.css['.tenant-bar-box']['min-width'] = '50%'
