@@ -415,6 +415,14 @@ function window(a) {
 }
 
 /**
+  * Open Window view for menu
+  * Currently shortcut to admin(a)
+  */
+function popup(a) {
+    return admin(a);
+}
+
+/**
   * Set title
   */
 function title(title) {
