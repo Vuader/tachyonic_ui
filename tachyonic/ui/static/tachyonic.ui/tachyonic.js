@@ -410,10 +410,6 @@ function admin(a) {
     return false
 }
 
-function window(a) {
-    admin(a);
-}
-
 /**
   * Open Window view for menu
   * Currently shortcut to admin(a)
