@@ -456,16 +456,7 @@ class Themes(object):
             if img is not None and img != '':
                 img = base64.b64decode(img)
                 resp.headers['content-type'] = img_type
-                current = datetime.strptime(img_timestamp, "%Y/%m/%d %H:%M:%S")
-                current = current.replace(tzinfo=timezone('GMT'))
-                current = datetime.strftime(current, "%a, %d %b %Y %H:%M:%S GMT")
-                resp.headers['Last-Modified'] = str(current)
-                if 'If-Modified-Since' in req.headers:
-                    cached = req.headers['If-Modified-Since']
-                    if cached == current:
-                        resp.status = const.HTTP_304
-                    else:
-                        return img
+                resp.modified(datetime.strptime(img_timestamp, "%Y/%m/%d %H:%M:%S"))
                 return img
 
     def themes(self, req, resp, theme_id=None):
