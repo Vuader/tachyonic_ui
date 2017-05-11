@@ -49,5 +49,6 @@ class Messaging(object):
                         return json.dumps(messages, indent=4)
 
     def get(self, req, resp):
+        req.session.do_not_save()
         server = self.Server(req, resp)
         return response_io_stream(server)
