@@ -75,6 +75,13 @@ class Auth(Token):
                 raise exceptions.HTTPInternalServerError("RESTAPI Offline %s" % e.title, e)
 
     def init(self, req, resp):
+        if req.context['domain_admin'] is False:
+            if req.context['tenant_id'] is None:
+                if len(req.context['tenants']) > 0:
+                    log.error(req.context['tenants'][0][0])
+                    api = Client(req.context['restapi'])
+                    req.context['tenant_id'] = req.context['tenants'][0][0]
+                    api.tenant(req.context['tenant_id'])
         logout = req.query.get('logout')
         jinja.request['LOGIN'] = False
         if 'token' in req.session:

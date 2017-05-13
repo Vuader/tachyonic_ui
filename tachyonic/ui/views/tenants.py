@@ -62,7 +62,8 @@ class Tenant(object):
             fields['id'] = 'Unique ID'
             dt = datatable(req, 'tenant', '/v1/tenants',
                            fields, view_button=True, service=False)
-            ui.view(req, resp, content=dt, title='Tenants')
+            ui.view(req, resp, content=dt,
+                    title='Tenants',config=app.config.get('tenants'))
         else:
             api = Client(req.context['restapi'])
             headers, response = api.execute(const.HTTP_GET, "/v1/tenant/%s" %
@@ -70,7 +71,8 @@ class Tenant(object):
             form = TenantModel(response, validate=False,
                                 readonly=True, cols=2)
             ui.view(req, resp, content=form, id=tenant_id, title='View Tenant',
-                    view_form=True, extra=extra)
+                    view_form=True, extra=extra,
+                    config=app.config.get('tenants'))
 
     def edit(self, req, resp, tenant_id=None):
         extra = "<script>tenant_form();</script>"

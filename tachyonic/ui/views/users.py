@@ -64,7 +64,8 @@ class User(object):
             fields['employer'] = 'Employer'
             dt = datatable(req, 'users', '/v1/users',
                            fields, view_button=True, service=False)
-            ui.view(req, resp, content=dt, title='Users')
+            ui.view(req, resp, content=dt, title='Users',
+                    config=app.config.get('users'))
         else:
             api = Client(req.context['restapi'])
             headers, assignments = api.execute(const.HTTP_GET, "/v1/user/roles/%s" % (user_id,))
@@ -74,20 +75,20 @@ class User(object):
                              assignments=assignments)
             form = UserModel(response, validate=False, readonly=True, cols=2)
             ui.view(req, resp, content=form, id=user_id, title='View User',
-                    view_form=True, extra=extra)
+                    view_form=True, extra=extra, config=app.config.get('users'))
 
     def assign(self, req, resp):
         api = Client(req.context['restapi'])
         user_id = req.post.get('user_id')
         role = req.post.get('role')
         remove = req.post.get('remove')
-        if role == '': 
+        if role == '':
             role = None
-        domain = req.post.get('domain')
-        if domain == '': 
+        domain = req.post.get('assign_domain_id')
+        if domain == '':
             domain = None
-        tenant_id = req.post.get('tenant_id')
-        if tenant_id == '': 
+        tenant_id = req.post.get('assign_tenant_id')
+        if tenant_id == '':
             tenant_id = None
 
         url = "/v1/user/role"
@@ -123,10 +124,10 @@ class User(object):
                 document.getElementById("domain").value = "";
             }
             else {
-            var id = ui.item.id;
-            var domain = ui.item.domain_id;
-            document.getElementById("tenant_id").value = id;
-            document.getElementById("domain").value = domain;
+                var id = ui.item.id;
+                var domain_id = ui.item.domain_id;
+                document.getElementById("assign_tenant_id").value = id;
+                document.getElementById("assign_domain_id").value = domain_id;
             }
             """
             change_js = """

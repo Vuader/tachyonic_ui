@@ -52,7 +52,7 @@
     <div style="width:100%;clear:both;"></div>
 {% endif %}
 
-{% if create_url %}
+{% if create_url and config.getboolean('create',True) %}
     <button class="btn btn-primary" data-url="{{ create_url }}" data-name="{{ title }}">Create</button>
 {% endif %}
 {% if save_url %}
@@ -61,7 +61,7 @@
 {% if created_url %}
     <input type="submit" class="btn btn-primary" value="Create" onclick="link(getElementById('tview'));">
 {% endif %}
-{% if edit_url %}
+{% if edit_url and config.getboolean('update',True) %}
     <button class="btn btn-warning" data-url="{{ edit_url }}" data-name="{{ title }}">Edit</button>
 {% endif %}
 {% if delete_url %}
@@ -73,19 +73,18 @@
 {% if back_url %}
     <button class="btn btn-default" data-url="{{ back_url }}" data-name="{{ title }}">Back</button>
 {% endif %}
-    <button id="window_close" class="btn btn-default" style="display: none;" onclick="close_window()">Close</button>
-
-    <script>
-        $( document ).ready(function() {   
-            var display = document.getElementById('window').style.display;
-            if (display == 'block') {
-                document.getElementById('window_close').style.display = 'inline';
-            }
-            {% if title %}
-            title("{{ title }}");
-            {% endif %}
-        });
-    </script>
+<button id="window_close" class="btn btn-default" onclick="close_window()">Close</button>
+<script>
+    $( document ).ready(function() {   
+        var display = document.getElementById('window').style.display;
+        if (display == 'block') {
+            document.getElementById('window_close').style.display = 'inline';
+        }
+        {% if title %}
+        title("{{ title }}");
+        {% endif %}
+    });
+</script>
 
 {% include 'tachyonic.ui/error.html' %}
 
