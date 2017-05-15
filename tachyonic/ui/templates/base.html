@@ -116,12 +116,23 @@ $( document ).ready(function() {
                     </select>
                 </div>
             </form>
+            {% if not REQUEST.context['domain_admin'] %}
+            <form class="form-inline pull-right" method="post" action="{{ SITE }}/open_tenant">
+                <select class="form-control" name="X-Tenant-Id" onchange="this.form.submit()">
+                    {% for t in REQUEST.context['tenants'] %}
+                    <option value='{{ t[0] }}' {% if REQUEST.context['tenant_id'] == t[0] %}selected{% endif %}  >{{ t[1] }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+            {% else %}
             <form id="searchForm" class="form-inline pull-right" method="post" action="{{ SITE }}/search" onsubmit="link(this); return false;" data-url="{{SITE}}/search" data-name="Search Tenants">
                 <div class="form-group pull-left">
                     {{ SEARCH }}
                 </div>
                 <button type="submit" class="btn btn-success">Search</button>
             </form>
+            {% endif %}
+
         </div>
     </div>
 </div>

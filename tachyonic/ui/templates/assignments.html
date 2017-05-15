@@ -57,7 +57,7 @@
                     <td>
                         <div class="form-group">
                             {% if IS_ROOT %}
-                                <select class="form-control" name="domain" id="domain" onchange="clear_assign();">
+                                <select class="form-control" name="assign_domain_id" id="assign_domain_id" onchange="clear_assign();">
                                     <option value=''>Select Domain</option>
                                     {% for d in all_domains %}
                                     <option value='{{ d['id'] }}'>{{ d['name'] }}</option>
@@ -65,7 +65,7 @@
                                 </select>
                                 <span class="pull-right"><H4>or Tenant</H4></span>
                             {% else %}
-                                <select class="form-control" name="domain" id="domain" onchange="clear_assign();">
+                                <select class="form-control" name="assign_domain_id" id="assign_domain_id" onchange="clear_assign();">
                                     <option value=''>Select Domain</option>
                                     {% for d in DOMAINS %}
                                     <option value='{{ d[0] }}'>{{ d[1] }}</option>
@@ -77,8 +77,8 @@
                     </td>
                     <td>
                         <div class="form-group">
-                            {{ tenants }}                                                                                                     
-                            <input id="tenant_id" class="form-control" name="tenant_id" type="text" value="" readonly>
+                            {{ tenants }}
+                            <input id="assign_tenant_id" class="form-control" name="assign_tenant_id" type="text" value="" readonly>
                         </div>
                     </td>
                     <td>

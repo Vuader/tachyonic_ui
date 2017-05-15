@@ -51,7 +51,6 @@ class Tenant(object):
                 js += "tenant_selected = true;"
                 script.append(js)
 
-
             form = TenantModel(response, validate=False,
                                readonly=True, cols=2)
             tenant = dom.create_element('form')
