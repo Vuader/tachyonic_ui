@@ -26,9 +26,17 @@ function reloadStylesheets() {
   * @param string form_id Serialize Data from Form to post
   *
   */
-function ajax_query(element, url, form=null, form_save=false, load_window=false, save='Successfully saved', headers={}) {
+function ajax_query(element, url, form, form_save, load_window, save, headers) {
+    // DEFAULT PARAMTER NOT SUPPPORTED BY IE
+    if (!form) searchMap = null;
+    if (!form_save) form_save = false;
+    if (!load_window) load_window= false;
+    if (!save) save = 'Succesfully saved';
+    if (!headers) headers = {}
+
     $('html, body').animate({ scrollTop: 0 }, 'fast');
     document.getElementById('confirm').style.display = 'none';
+
     if (typeof(form) !== 'undefined' && form != null) {
         if (typeof(window.FormData) == 'undefined') {
             submit = $(form).serialize();
