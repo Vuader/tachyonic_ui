@@ -3,3 +3,4 @@ tachyonic/ui/templates/* linguist-vendored
 tachyonic/ui/resources/* linguist-vendored
 docs/* linguist-vendored
 jquery.js linguist-vendored=false
+*.js linguist-language=Python
