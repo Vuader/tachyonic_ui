@@ -212,7 +212,7 @@ setup_dict = dict(
     include_package_data=True,
     namespace_packages = [
         'tachyonic'
-        ],   
+        ],
     # Find a list of classifiers here:
     # <http://pypi.python.org/pypi?%3Aaction=list_classifiers>
     classifiers=[
