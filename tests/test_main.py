@@ -8,7 +8,7 @@ from pytest import raises
 import pytest
 parametrize = pytest.mark.parametrize
 
-from tachyonic import metadata
+from tachyonic.ui import metadata
 from tachyonic.main import main
 
 
