@@ -11,6 +11,7 @@ from tachyonic.common import exceptions as exceptions
 from tachyonic.common import constants as const
 from tachyonic.client import Client
 from tachyonic.common.exceptions import ClientError
+from tachyonic.neutrino.config import Config
 
 from tachyonic.ui.auth import clear_session
 from tachyonic.ui.auth import authenticated
@@ -45,6 +46,8 @@ def view_access(req, subview):
 def view(req, resp, **kwargs):
     res = resource(req)
     id = kwargs.get('id', None)
+    if 'config' not in kwargs:
+        kwargs['config'] = req.config.get('_empty_')
     if id is None:
         if view_access(req, '/create'):
             kwargs['create_url'] = "%s/%s/create" % (req.get_app(), res)
@@ -61,6 +64,8 @@ def view(req, resp, **kwargs):
 def edit(req, resp, **kwargs):
     res = resource(req)
     id = kwargs.get('id', None)
+    if 'config' not in kwargs:
+        kwargs['config'] = req.config.get('_empty_')
     if 'confirm' not in kwargs:
         kwargs['confirm'] = "Continue deleting item?"
     kwargs['save_url'] = "%s/%s/edit/%s" % (req.get_app(), res, id)
@@ -72,6 +77,8 @@ def edit(req, resp, **kwargs):
 
 def create(req, resp, id=None, **kwargs):
     res = resource(req)
+    if 'config' not in kwargs:
+        kwargs['config'] = req.config.get('_empty_')
     kwargs['created_url'] = "%s/%s/create" % (req.get_app(), res)
     kwargs['back_url'] = "%s/%s" % (req.get_app(), res)
     t = jinja.get_template('tachyonic.ui/view.html')
