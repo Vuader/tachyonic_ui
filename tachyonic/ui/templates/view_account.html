@@ -1,0 +1,164 @@
+<form onsubmit="onsubmit=\"return false;\"">
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_id">
+   <label for="id">Internal ID</label>
+   <div style="width:100%;" class="input-group"><input name="id" value="{{ content['id'] }}" id="id" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_external_id">
+   <label for="external_id">External ID</label>
+   <div style="width:60em;max-width:100%" class="input-group"><input name="external_id" value="{{ content['external_id'] }}" id="external_id" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_tenant_id">
+   <label for="tenant_id">Parent ID</label>
+   <div style="width:60em;max-width:100%" class="input-group"><input name="tenant_id" value="{{ content['tenant_id'] }}" id="tenant_id" readonly type="text" class="form-control"></div>
+</div>
+<input type="hidden" id="domain_id" value="{{ content['domain_id'] }}" name="domain_id">
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_tenant_type">
+   <label for="tenant_type">Account Type</label>
+   <div style="width:13em;max-width:100%" class="input-group">
+      <select disabled="disabled" class="form-control" id="tenant_type" name="tenant_type" value="{{ content['tenant_type'] }}">
+         <option selected value="individual">individual</option>
+         <option value="organization">organization</option>
+      </select>
+   </div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_name">
+   <label for="name">Name (*)</label>
+   <div style="width:30em;max-width:100%" class="input-group"><input name="name" required value="{{ content['name'] }}" id="name" readonly maxlength="50" type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group individual" id="form_group_title">
+   <label for="title">Title</label>
+   <div style="width:5em;max-width:100%" class="input-group">
+      <select disabled="disabled" class="form-control" id="title" name="title" value="{{ content['title'] }}">
+         <option value></option>
+         <option value="Mr">Mr</option>
+         <option value="Mrs">Mrs</option>
+         <option value="Ms">Ms</option>
+         <option value="Dr">Dr</option>
+         <option value="Prof">Prof</option>
+      </select>
+   </div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_email">
+   <label for="email">Email</label>
+   <div style="width:30em;max-width:100%" class="input-group"><input name="email" value="{{ content['email'] }}" id="email" readonly maxlength="50" type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group individual" id="form_group_phone_mobile">
+   <label for="phone_mobile">Mobile Phone</label>
+   <div style="width:16em;max-width:100%" class="input-group"><input name="phone_mobile" placeholder="e.g. +16502530000" id="phone_mobile" value="{{ content['phone_mobile'] }}" readonly maxlength="17" type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_phone_office">
+   <label for="phone_office">Office Phone</label>
+   <div style="width:16em;max-width:100%" class="input-group"><input name="phone_office" placeholder="e.g. +16502530000" id="phone_office" value="{{ content['phone_office'] }}" readonly maxlength="17" type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_phone_fax">
+   <label for="phone_fax">Fax Phone</label>
+   <div style="width:16em;max-width:100%" class="input-group"><input name="phone_fax" placeholder="e.g. +16502530000" id="phone_fax" value="{{ content['phone_fax'] }}" readonly maxlength="17" type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group individual" id="form_group_phone_home">
+   <label for="phone_home">Home Phone</label>
+   <div style="width:16em;max-width:100%" class="input-group"><input name="phone_home" placeholder="e.g. +16502530000" id="phone_home" value="{{ content['phone_home'] }}" readonly maxlength="17" type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group organization" id="form_group_reg">
+   <label for="reg">Registration No.</label>
+   <div style="width:30em;max-width:100%" class="input-group"><input name="reg" value="{{ content['reg'] }}" id="reg" readonly maxlength="50" type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group organization" id="form_group_taxno">
+   <label for="taxno">TAX/VAT No.</label>
+   <div style="width:30em;max-width:100%" class="input-group"><input name="taxno" value="{{ content['taxno'] }}" id="taxno" readonly maxlength="50" type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group individual" id="form_group_idno">
+   <label for="idno">Identification No.</label>
+   <div style="width:30em;max-width:100%" class="input-group"><input name="idno" value="{{ content['idno'] }}" id="idno" readonly maxlength="50" type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group individual" id="form_group_idtype">
+   <label for="idtype">Identification Type</label>
+   <div style="width:13em;max-width:100%" class="input-group">
+      <select disabled="disabled" class="form-control" id="idtype" name="idtype" value="idtype">
+         <option value="ID Document">ID Document</option>
+         <option value="Passport">Passport</option>
+      </select>
+   </div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group individual" id="form_group_employer">
+   <label for="employer">Employer</label>
+   <div style="width:30em;max-width:100%" class="input-group"><input name="employer" placeholder="e.g. Enterprise Inc." value="{{ content['employer'] }}" id="employer" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group individual" id="form_group_designation">
+   <label for="designation">Designation</label>
+   <div style="width:25em;max-width:100%" class="input-group"><input name="designation" placeholder="e.g. Engineer." value="{{ content['designation'] }}" id="designation" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_bill_address">
+   <label for="bill_address">Billing Address</label>
+   <div style="width:10em;max-width:100%" class="input-group">
+      <select disabled="disabled" class="form-control" id="bill_address" name="bill_address" type="bill_address">
+         <option value="Physical">Physical</option>
+         <option value="Post">Post</option>
+      </select>
+   </div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_address_line1">
+   <label for="address_line1">Address Line 1</label>
+   <div style="width:25em;max-width:100%" class="input-group"><input name="address_line1" placeholder="e.g. 1600 Amphitheatre Parkway" value="{{ content['address_line1'] }}" id="address_line1" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_address_line2">
+   <label for="address_line2">Address Line 2</label>
+   <div style="width:25em;max-width:100%" class="input-group"><input name="address_line2" placeholder value="{{ content['address_line2'] }}" id="address_line2" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_address_line3">
+   <label for="address_line3">Address Line 3</label>
+   <div style="width:25em;max-width:100%" class="input-group"><input name="address_line3" placeholder value="{{ content['address_line3'] }}" id="address_line3" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_address_city">
+   <label for="address_city">Address City</label>
+   <div style="width:25em;max-width:100%" class="input-group"><input name="address_city" placeholder="eg. Mountain View" value="{{ content['address_city'] }}" id="address_city" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_address_state">
+   <label for="address_state">Address State/Province</label>
+   <div style="width:25em;max-width:100%" class="input-group"><input name="address_state" placeholder="e.g. California" value="{{ content['address_state'] }}" id="address_state" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_address_code">
+   <label for="address_code">Address ZIP Code</label>
+   <div style="width:10em;max-width:100%" class="input-group"><input name="address_code" placeholder="eg. 94043" value="{{ content['address_code'] }}" id="address_code" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_address_country">
+   <label for="address_country">Address Country</label>
+   <div style="width:25em;max-width:100%" class="input-group"><input name="address_country" placeholder="e.g. United States" value="{{ content['address_country'] }}" id="address_country" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_post_line1">
+   <label for="post_line1">Post Line 1</label>
+   <div style="width:25em;max-width:100%" class="input-group"><input name="post_line1" placeholder="e.g. 1600 Amphitheatre Parkway" value="{{ content['post_line1'] }}" id="post_line1" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_post_line2">
+   <label for="post_line2">Post Line 2</label>
+   <div style="width:25em;max-width:100%" class="input-group"><input name="post_line2" placeholder value="{{ content['post_line2'] }}" id="post_line2" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_post_line3">
+   <label for="post_line3">Post Line 3</label>
+   <div style="width:25em;max-width:100%" class="input-group"><input name="post_line3" placeholder value="{{ content['post_line3'] }}" id="post_line3" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_post_city">
+   <label for="post_city">Post City</label>
+   <div style="width:25em;max-width:100%" class="input-group"><input name="post_city" placeholder="eg. Mountain View" value="{{ content['post_city'] }}" id="post_city" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_post_state">
+   <label for="post_state">Post State/Province</label>
+   <div style="width:25em;max-width:100%" class="input-group"><input name="post_state" placeholder="e.g. California" value="{{ content['post_state'] }}" id="post_state" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_post_code">
+   <label for="post_code">Post ZIP Code</label>
+   <div style="width:10em;max-width:100%" class="input-group"><input name="post_code" placeholder="eg. 94043" value="{{ content['post_code'] }}" id="post_code" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_post_country">
+   <label for="post_country">Post Country</label>
+   <div style="width:25em;max-width:100%" class="input-group"><input name="post_country" placeholder="e.g. United States" value="{{ content['post_country'] }}" id="post_country" readonly type="text" class="form-control"></div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_enabled">
+   <div>
+      <div class="checkbox"><label for="enabled"><input disabled checked type="checkbox" id="enabled" name="enabled">Enabled</label></div>
+   </div>
+</div>
+<div style="float: left;margin-left:0px;min-height:60px;padding-left:2px;min-width:50%;max-width:50%;overflow:none;" class="form-group" id="form_group_creation_time">
+   <label for="creation_time">Created</label>
+   <div style="width:20em;max-width:100%" class="input-group"><input name="creation_time" placeholder="0000-00-00 00:00:00" value="{{ content['creation_time'] }}" id="creation_time" readonly type="text" class="form-control"></div>
+</div>
+</form>
