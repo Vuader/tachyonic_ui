@@ -286,6 +286,7 @@ function link(element) {
         if ("confirm" in element.dataset) {
             document.getElementById('confirmation').innerHTML = element.dataset.confirm;
             document.getElementById('confirm').style.display = 'block';
+            $('[data-toggle="tooltip"]').tooltip();
             document.getElementById('continue').onclick = function() {
                 confirm = String(element.dataset.confirm);
                 document.getElementById('confirm').style.display = 'none';
