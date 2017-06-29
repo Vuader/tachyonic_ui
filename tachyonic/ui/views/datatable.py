@@ -18,7 +18,8 @@ log = logging.getLogger(__name__)
 def datatable(req, table_id, url,
               fields, width='100%', view_button=False,
               checkbox=False, service=False,
-              endpoint=None, id_field=None):
+              endpoint=None, id_field=None,
+              search='', sort=''):
     dom = Dom()
     table = dom.create_element('table')
     table.set_attribute('id', table_id)
@@ -53,10 +54,19 @@ def datatable(req, table_id, url,
     if view_button is True or checkbox is True:
         th = tr.create_element('th')
         th.append('&nbsp;')
+    if search:
+	q = search
+        search = "'search': {"
+        search += "'search': '%s'" % (q,)
+        search += '},'
+    if sort:
+        sort = "'order': [[%s, '%s']]," % (sort[0],sort[1])
 
     js = "$(document).ready(function() {"
     js += "var table = $('#%s').DataTable( {" % (table_id,)
     js += "'processing': true,"
+    js += search
+    js += sort
     js += "'serverSide': true,"
     js += "'ajax': '%s/dt/?api=%s&fields=%s" % (req.app, url, api_fields)
     if endpoint:
