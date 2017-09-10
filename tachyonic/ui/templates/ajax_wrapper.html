@@ -1,4 +1,8 @@
 {% extends "tachyonic.ui/base.html" %}
 {% block content %}
-{{content}}
+    <script type="text/javascript">
+        document.getElementById("open_tenant").value = "{{ content['name'] }}";
+        tenant_selected = true;
+    </script>
+    {% include "tachyonic.ui/view_account.html" %}
 {% endblock %}
