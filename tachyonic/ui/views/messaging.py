@@ -10,7 +10,7 @@ from tachyonic import router
 
 log = logging.getLogger(__name__)
 from tachyonic.neutrino import constants as const
-from tachyonic.neutrino.utils.general import timer as nfw_timer
+from tachyonic.common.timer import timer as nfw_timer
 from tachyonic.neutrino.response import response_io_stream
 
 
@@ -49,5 +49,6 @@ class Messaging(object):
                         return json.dumps(messages, indent=4)
 
     def get(self, req, resp):
+        req.session.do_not_save()
         server = self.Server(req, resp)
         return response_io_stream(server)

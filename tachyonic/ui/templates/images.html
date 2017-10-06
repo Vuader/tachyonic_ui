@@ -1,0 +1,84 @@
+<H2>Custom Images</H2>
+<script>
+    var tags = [
+    {% for i in tags %}
+    '{{ i }}',
+    {% endfor %}
+    '.'
+    ];
+</script>
+<div id="stylesheets">
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>
+                        <div class="form-group">
+                            Logo
+                        </div>
+                    </th>
+                    <td>
+                        <div class="form-group">
+                            {% if logo %}
+                            <IMG SRC="{{SITE}}/image/logo/{{theme_id}}" height="50px">
+                            {% endif %}
+                        </div>
+                    </td>
+                    {% if not readonly %}
+                    <td>
+                        <form id='css' class="form-inline" enctype='multipart/form-data' method="post" novalidate role="form" data-url="{{SITE}}/themes/edit/{{theme_id}}">
+                            <div class="form-group">
+                                <input type="file" name="logo">
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control btn btn-warning" type="submit" value="Upload">
+                            </div>
+                            <div class="form-group">
+                                <a data-url="{{SITE}}/themes/edit/{{theme_id}}?delete_image=logo" type="submit" class="btn btn-danger">Remove</a>
+                            </div>
+                        </form>
+                    </td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <th>
+                        <div class="form-group">
+                            Background
+                        </div>
+                    </th>
+                    <td>
+                        <div class="form-group">
+                            {% if background %}
+                            <IMG SRC="{{SITE}}/image/background/{{theme_id}}" width="100px">
+                            {% endif %}
+                        </div>
+                    </td>
+                    {% if not readonly %}
+                    <td>
+                        <form id='css' class="form-inline" enctype='multipart/form-data' method="post" novalidate role="form" data-url="{{SITE}}/themes/edit/{{theme_id}}">
+                            <div class="form-group">
+                                <input type="file" name="background">
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control btn btn-warning" type="submit" value="Upload">
+                            </div>
+                            <div class="form-group">
+                                <a data-url="{{SITE}}/themes/edit/{{theme_id}}?delete_image=background" type="submit" class="btn btn-danger">Remove</a>
+                            </div>
+                        </form>
+                    </td>
+                    {% endif %}
+                </tr>
+            </tbody>
+        </table>
+</div>
+{% if not readonly %}
+{% if REQUEST.get_host() == domain %}
+<script>
+{% if logo %}
+document.getElementById('nav_logo').src = "{{SITE}}/image/logo/{{theme_id}}";
+{% else %}
+document.getElementById('nav_logo').src = "{{STATIC}}/tachyonic.ui/images/tachyon-sm.png";
+{% endif %}
+</script>
+{% endif %}
+{% endif %}

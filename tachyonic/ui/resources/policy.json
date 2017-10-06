@@ -9,6 +9,7 @@
     "is_customer": "$context.roles:Customer",
     "is_user": "$context.login:True",
     "tachyonic:login": "Rule:is_user",
+    "themes:admin": "Rule:is_root or Rule:is_ops or Rule:is_admin or Rule:is_support",
     "users:admin": "Rule:is_root or Rule:is_ops or Rule:is_admin or Rule:is_support",
     "users:view": "Rule:is_root or Rule:is_ops or Rule:is_admin or Rule:is_support",
     "roles:admin": "Rule:is_root",
@@ -28,5 +29,9 @@
     "transmission:admin": "Rule:is_root or Rule:is_ops",
     "transmission:users": "Rule:is_user",
     "billing:admin": "Rule:is_root or Rule:is_billing",
-    "billing:users": "Rule:is_user"
+    "billing:users": "Rule:is_user",
+    "queue:admin": "Rule:is_root or Rule:is_ops",
+    "queue:user": "Rule:is_root or Rule:is_ops or Rule:is_admin or Rule:is_support",
+    "nnpo:admin": "Rule:is_root or Rule:is_ops",
+    "nnpo:customer": "Rule:is_root or Rule:is_ops or Rule:is_admin or Rule:is_support"
 }

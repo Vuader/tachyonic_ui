@@ -2,7 +2,14 @@
 {% block content %}
     <div class="jumbotron">
       <div class="container">
-        <h1>Page requested not found...</h1>
+        {% if title %}
+        <H2>{{ title }}</H2></p>
+        {% else %}
+        <h2>Page requested not found...</h2>
+        {% endif %}
+        {% if description %}
+        <p>{{ description }}</p>
+        {% endif %}
         <p>Please try again!</p>
         <p>Request ID: ({{REQUEST_ID}})</p>
         <p><a class="btn btn-primary btn-lg" href="{{SITE}}" role="button">Home &raquo;</a></p>

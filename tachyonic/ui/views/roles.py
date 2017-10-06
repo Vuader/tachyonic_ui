@@ -2,18 +2,19 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import logging
+import json
 from collections import OrderedDict
 
 from tachyonic import app
 from tachyonic import router
-from tachyonic.neutrino import constants as const
-from tachyonic.neutrino import exceptions
+from tachyonic.common import constants as const
+from tachyonic.common import exceptions
 from tachyonic.client import Client
 
 from tachyonic.ui.views import ui
 from tachyonic.ui.views.datatable import datatable
 from tachyonic.ui import menu
-from tachyonic.ui.models.roles import Role as RoleModel
+from tachyonic.api.models.roles import Role as RoleModel
 
 log = logging.getLogger(__name__)
 
@@ -22,16 +23,16 @@ menu.admin.add('/Accounts/Roles','/roles','roles:view')
 @app.resources()
 class Roles(object):
     def __init__(self):
-        # VIEW USERS
+        # VIEW ROLES
         router.add(const.HTTP_GET,
                    '/roles',
                    self.view,
-                   'roles:view')
+                   'tachyonic:login')
         router.add(const.HTTP_GET,
                    '/roles/view/{role_id}',
                    self.view,
                    'roles:view')
-        # ADD NEW USERS
+        # ADD NEW ROLES
         router.add(const.HTTP_GET,
                    '/roles/create',
                    self.create,
@@ -40,26 +41,36 @@ class Roles(object):
                    '/roles/create',
                    self.create,
                    'roles:admin')
-        # EDIT USERS
+        # EDIT ROLES
         router.add(const.HTTP_GET,
                    '/roles/edit/{role_id}', self.edit,
                    'roles:admin')
         router.add(const.HTTP_POST,
                    '/roles/edit/{role_id}', self.edit,
                    'roles:admin')
-        # DELETE USERS
+        # DELETE ROLES
         router.add(const.HTTP_GET,
                    '/roles/delete/{role_id}', self.delete,
                    'roles:admin')
 
     def view(self, req, resp, role_id=None):
         if role_id is None:
-            fields = OrderedDict()
-            fields['name'] = 'Role'
-            fields['description'] = 'Description'
-            dt = datatable(req, 'roles', '/v1/roles',
-                           fields, view_button=True, service=False)
-            ui.view(req, resp, content=dt, title='Roles')
+            return_format = req.headers.get('X-Format')
+            if return_format == "select2":
+                api = Client(req.context['restapi'])
+                headers, response = api.execute(
+                    const.HTTP_GET, "/v1/roles/")
+                result = []
+                for r in response:
+                    result.append({'id': r['id'], 'text': r['name']})
+                return json.dumps(result, indent=4)
+            else:
+                fields = OrderedDict()
+                fields['name'] = 'Role'
+                fields['description'] = 'Description'
+                dt = datatable(req, 'roles', '/v1/roles',
+                fields, view_button=True, service=False)
+                ui.view(req, resp, content=dt, title='Roles')
         else:
             api = Client(req.context['restapi'])
             headers, response = api.execute(const.HTTP_GET, "/v1/role/%s" % (role_id,))
@@ -68,7 +79,8 @@ class Roles(object):
                     view_form=True)
 
     def edit(self, req, resp, role_id=None):
-        if req.method == const.HTTP_POST:
+        save = req.post.get('save', False)
+        if req.method == const.HTTP_POST and save is not False:
             form = RoleModel(req.post, validate=True, readonly=True)
             api = Client(req.context['restapi'])
             headers, response = api.execute(const.HTTP_PUT, "/v1/role/%s" %

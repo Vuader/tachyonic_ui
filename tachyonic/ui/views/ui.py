@@ -7,10 +7,11 @@ import re
 from tachyonic import app
 from tachyonic import router
 from tachyonic import jinja
-from tachyonic.neutrino import exceptions as exceptions
-from tachyonic.neutrino import constants as const
+from tachyonic.common import exceptions as exceptions
+from tachyonic.common import constants as const
 from tachyonic.client import Client
-from tachyonic.client.exceptions import ClientError
+from tachyonic.common.exceptions import ClientError
+from tachyonic.neutrino.config import Config
 
 from tachyonic.ui.auth import clear_session
 from tachyonic.ui.auth import authenticated
@@ -25,8 +26,7 @@ def resource(req):
     return uri
 
 def route(req, route):
-    route = route.strip('/')
-    return router._match(const.HTTP_GET, route)
+    return router._falcon[const.HTTP_GET].find(route)
 
 
 def view_access(req, subview):
@@ -35,8 +35,7 @@ def view_access(req, subview):
     res = "%s/%s" % (res, subview)
     r = route(req, res)
     if r is not None:
-        r_route, obj_kwargs = r
-        method, r_route, obj, name = r_route
+        obj, methods, obj_kwargs, r_route, name = r
         if req.policy.validate(name):
             return True
     return False
@@ -45,6 +44,8 @@ def view_access(req, subview):
 def view(req, resp, **kwargs):
     res = resource(req)
     id = kwargs.get('id', None)
+    if 'config' not in kwargs:
+        kwargs['config'] = req.config.get('_empty_')
     if id is None:
         if view_access(req, '/create'):
             kwargs['create_url'] = "%s/%s/create" % (req.get_app(), res)
@@ -61,6 +62,8 @@ def view(req, resp, **kwargs):
 def edit(req, resp, **kwargs):
     res = resource(req)
     id = kwargs.get('id', None)
+    if 'config' not in kwargs:
+        kwargs['config'] = req.config.get('_empty_')
     if 'confirm' not in kwargs:
         kwargs['confirm'] = "Continue deleting item?"
     kwargs['save_url'] = "%s/%s/edit/%s" % (req.get_app(), res, id)
@@ -72,6 +75,8 @@ def edit(req, resp, **kwargs):
 
 def create(req, resp, id=None, **kwargs):
     res = resource(req)
+    if 'config' not in kwargs:
+        kwargs['config'] = req.config.get('_empty_')
     kwargs['created_url'] = "%s/%s/create" % (req.get_app(), res)
     kwargs['back_url'] = "%s/%s" % (req.get_app(), res)
     t = jinja.get_template('tachyonic.ui/view.html')
@@ -82,6 +87,7 @@ def create(req, resp, id=None, **kwargs):
 class Tachyon(object):
     def __init__(self):
         router.add(const.HTTP_GET, '/', self.home, 'tachyonic:public')
+        router.add(const.HTTP_POST, '/', self.home, 'tachyonic:public')
         router.add(const.HTTP_GET, '/login', self.login, 'tachyonic:public')
         router.add(const.HTTP_POST, '/login', self.login, 'tachyonic:public')
         router.add(const.HTTP_GET, '/logout', self.logout, 'tachyonic:public')
@@ -99,8 +105,20 @@ class Tachyon(object):
 
     def home(self, req, resp):
         if req.session.get('token') is not None:
+            tenant_name = ''
+            tenant_selected = False
+            if ('tenant_id' in req.context and
+                    req.context['tenant_id'] is not None):
+                api = Client(req.context['restapi'])
+                server_headers, response = api.execute(const.HTTP_GET,
+                                                       '/v1/tenant')
+                if 'id' in response:
+                    tenant_name = response['name']
+                    tenant_selected = True
+
             t = jinja.get_template('tachyonic.ui/dashboard.html')
-            resp.body = t.render()
+            resp.body = t.render(tenant_selected=tenant_selected, open_tenant=tenant_name)
+
         else:
             router.view('/login', const.HTTP_POST, req, resp)
 
@@ -129,7 +147,6 @@ class Tachyon(object):
                     error.append(msg)
 
         if req.session.get('token') is not None:
-            # resp.view('/', const.HTTP_GET)
             resp.redirect('/')
         else:
             t = jinja.get_template('tachyonic.ui/login.html')

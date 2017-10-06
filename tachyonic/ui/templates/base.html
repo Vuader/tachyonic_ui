@@ -9,21 +9,33 @@
     <link rel="stylesheet" href="{{STATIC}}/tachyonic.ui/bootstrap/css/signin.css" />
     <link rel="stylesheet" href="{{STATIC}}/tachyonic.ui/jquery-ui/jquery-ui.min.css" />
 
-    <link rel="stylesheet" href="{{SITE}}/css" />
-    <link rel="stylesheet" href="{{STATIC}}/custom.css" />
     <link rel="stylesheet" type="text/css" href="{{STATIC}}/tachyonic.ui/DataTables/datatables.min.css"/>
     <script src="{{STATIC}}/tachyonic.ui/jquery-3.1.1.js"></script>
     <script src="{{STATIC}}/tachyonic.ui/jquery-ui/jquery-ui.min.js"></script>
     <script src="{{STATIC}}/tachyonic.ui/bootstrap/js/bootstrap.js"></script>
-    <script type="text/javascript" src="{{STATIC}}/tachyonic.ui/DataTables/datatables.min.js"></script>
-    <script src="{{STATIC}}/tachyonic.ui/tachyonic.js"></script>
     <link href="{{STATIC}}/tachyonic.ui/select2/css/select2.min.css" rel="stylesheet" />
     <script src="{{STATIC}}/tachyonic.ui/select2/js/select2.min.js"></script>
-    <title>{{TITLE}}</title>
+    <script type="text/javascript" src="{{STATIC}}/tachyonic.ui/DataTables/datatables.min.js"></script>
+    <script src="{{STATIC}}/tachyonic.ui/tachyonic.js"></script>
+    <link rel="stylesheet" href="{{SITE}}/css" />
+    <link rel="stylesheet" href="{{STATIC}}/custom.css" />
+    {% if CUSTOM_LOGO %}
+    <link rel="icon" href="{{SITE}}/image/logo/{{THEME_DOMAIN}}">
+    {% else %}
+    <link rel="icon" href="{{STATIC}}/tachyonic.ui/images/tachyon-sm.png">
+    {% endif %}
+{{ HTML_ASSETS }}
+    <title>{{NAME}}</title>
 </head>
 <body>
 {% if LOGIN %}
 <script>
+    {% if tenant_selected %}
+    tenant_selected = true;
+    $( document ).ready(function() {
+        document.getElementById('open_tenant').value = "{{ open_tenant }}";
+    });
+    {% endif %}
     var login = true;
 </script>
 {% else %}
@@ -31,17 +43,30 @@
     var login = false;
 </script>
 {% endif %}
+<script>
+/**
+  * Run Polling function
+  */
+$( document ).ready(function() {
+    poll('{{SITE}}')                                                                                                                                    
+});
+</script>
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-wrapper menu">
         <div class="container">
             <div class="navbar-header">
+                {% if CUSTOM_LOGO %}
+                <a href="#" class="navbar-left pull-left"><img src="{{SITE}}/image/logo/{{THEME_DOMAIN}}" height="50px" id="nav_logo"></a>
+                {% else %}
+                <a href="#" class="navbar-left pull-left"><img src="{{STATIC}}/tachyonic.ui/images/tachyon-sm.png" height="50px" id="nav_logo"></a>
+                {% endif %}
+                <a id="SITE_TITLE" class="navbar-brand navbar-left" href="{{SITE}}">{{ NAME }}</a>
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">{{ NAME }}</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <div id="topmenu">
@@ -52,33 +77,68 @@
                 </ul>
                 </div>
                 {% if LOGIN %}
-                <form class="navbar-form navbar-right" method="post" action="{{ SITE }}/">
-                    <div class="form-group">
-                    <form method="post">
-                        {{ SEARCH }}
-                    </form>
-                    <select class="form-control">
-                        {% for d in DOMAINS %}
-                        <option value='{{ d }}'>{{ d }}</option>
-                        {% endfor %}
-                    </select>
-                    </div>
-                </form>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <img src="{{STATIC}}/tachyonic.ui/images/dude.png" data-toggle="dropdown">
+                        <ul class="dropdown-menu">
+                            <li class="nav-link"><a href="{{SITE}}/logout">Logout</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
                 {% endif %}
             </div>
         </div>
     </div>
 </nav>
-<div class="account">
+{% if LOGIN %}
+<div class="top-bar">
     <div class="container">
-        <div class="row">
-            <div class="col-sm-12">
-                {{ACCOUNT}}
-            </div>
+        <div class="pull-left tenant-bar-box">
+            <form class="form-inline pull-left" disabled onsubmit='return false;'>
+                <div class="form-group" style="width:100%">
+                    <input id='open_tenant' class="form-control" readonly style="width: 290px" placeholder="Current Open Tenant">
+                </div>
+            </form>
+            <form class="form-inline pull-left" action="{{SITE}}" method="post">
+                <input type="hidden" name="X-Tenant-Id" value="NULL">
+                <button type="submit" class="btn btn-danger" class="pull-right">Close</button>
+            </form>
+        </div>
+        <div class="pull-right search-bar-box">
+            <form class="form-inline pull-left" method="post" action="{{ SITE }}/">
+                <div class="form-group">
+                    <input type="hidden" name="X-Tenant-Id" value="NULL">
+                    <select class="form-control" name="X-Domain" onchange="this.form.submit()">
+                        {% for d in DOMAINS %}
+                        <option value='{{ d[0] }}' {% if REQUEST.context['domain_id'] == d[0] %}selected{% endif %}  >{{ d[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+            {% if not REQUEST.context['domain_admin'] %}
+            <form class="form-inline pull-right" method="post" action="{{ SITE }}/open_tenant">
+                <select class="form-control" name="X-Tenant-Id" onchange="this.form.submit()">
+                    {% for t in REQUEST.context['tenants'] %}
+                    <option value='{{ t[0] }}' {% if REQUEST.context['tenant_id'] == t[0] %}selected{% endif %}  >{{ t[1] }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+            {% else %}
+            <form id="searchForm" class="form-inline pull-right" method="post" action="{{ SITE }}/search" onsubmit="link(this); return false;" data-url="{{SITE}}/search" data-name="Search Tenants">
+                <div class="form-group pull-left">
+                    {{ SEARCH }}
+                </div>
+                <button type="submit" class="btn btn-success">Search</button>
+            </form>
+            {% endif %}
+
         </div>
     </div>
 </div>
+{% else %}
 <div class="push_top"></div>
+{% endif %}
 <div class="loading" id="loading"></div>
 <div class="locked" id="locked"></div>
 <div class="confirm" id="confirm">
@@ -103,7 +163,7 @@
     </div>
     <div class="modal-footer">
 		<button class="btn btn-default" onclick="document.getElementById('logout').style.display = 'none'; idleTime=0;">Continue</button>
-        <a class="btn btn-danger" href="{{SITE}}/logout">Logout</button></a>
+        <a class="btn btn-danger" href="{{SITE}}/logout">Logout</a>
     </div>
 </div>
 <div class="window" id="window">
@@ -124,9 +184,9 @@
             {% if MENU_ACCOUNTS %}
             <div class="block menu_accounts">
                 <div class="block_title">
-                    Accounts
+                    Tenant Account
                 </div>
-                <div class="block_content">
+                <div class="block_menu">
                     <ul class="nav nav-pills nav-stacked">
                     {{ MENU_ACCOUNTS }}
                     </ul>
@@ -138,7 +198,7 @@
                 <div class="block_title">
                     Services
                 </div>
-                <div class="block_content">
+                <div class="block_menu">
                     <ul class="nav nav-pills nav-stacked">
                     {{ MENU_SERVICES }}
                     </ul>
@@ -158,16 +218,18 @@
                     <div class="box">
                         {{ EMAIL }}
                     </div>
-                    <form method="get" action="{{ SITE }}/logout">
-                        <button type="submit" class="btn btn-success">Logout</button>
-                    </form>
+                    <a href="{{ SITE }}/logout" type="submit" class="btn btn-danger">Logout</a>
                 </div>
             </div>
             {% endif %}
         </div>
         <div class="col-sm-9">
             <div class="block">
-                <div class="block_title" id="title">{{TITLE}}</div>
+                {% if title %}
+                <div class="block_title" id="title">{{title}}</div>
+                {% else %}
+                <div class="block_title" id="title">{{NAME}}</div>
+                {% endif %}
                 <div class="block_content" id="service">
                     {% block content %}{% endblock %}
                 </div>
@@ -175,10 +237,11 @@
         </div>
     </div>
 </div>
+
 <div id="popup"></div>
-<div class="container">
-    <p class="pull-right"><a href="#">Back to top</a></p>
-</div>
+    <div class="container">
+        <p class="pull-right"><a href="#">Back to top</a></p>
+    </div>
 <div class="push_bottom"></div>
 
 <footer>
