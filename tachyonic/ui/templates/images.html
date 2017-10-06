@@ -19,7 +19,7 @@
                     <td>
                         <div class="form-group">
                             {% if logo %}
-                            <IMG SRC="{{SITE}}/image/{{theme_id}}/logo" height="50px">
+                            <IMG SRC="{{SITE}}/image/logo/{{theme_id}}" height="50px">
                             {% endif %}
                         </div>
                     </td>
@@ -48,7 +48,7 @@
                     <td>
                         <div class="form-group">
                             {% if background %}
-                            <IMG SRC="{{SITE}}/image/{{theme_id}}/background" width="100px">
+                            <IMG SRC="{{SITE}}/image/background/{{theme_id}}" width="100px">
                             {% endif %}
                         </div>
                     </td>
@@ -75,7 +75,7 @@
 {% if REQUEST.get_host() == domain %}
 <script>
 {% if logo %}
-document.getElementById('nav_logo').src = "{{SITE}}/image/{{theme_id}}/logo";
+document.getElementById('nav_logo').src = "{{SITE}}/image/logo/{{theme_id}}";
 {% else %}
 document.getElementById('nav_logo').src = "{{STATIC}}/tachyonic.ui/images/tachyon-sm.png";
 {% endif %}

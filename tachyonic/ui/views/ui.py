@@ -26,8 +26,7 @@ def resource(req):
     return uri
 
 def route(req, route):
-    route = route.strip('/')
-    return router._match(const.HTTP_GET, route)
+    return router._falcon[const.HTTP_GET].find(route)
 
 
 def view_access(req, subview):
@@ -36,8 +35,7 @@ def view_access(req, subview):
     res = "%s/%s" % (res, subview)
     r = route(req, res)
     if r is not None:
-        r_route, obj_kwargs = r
-        method, r_route, obj, name = r_route
+        obj, methods, obj_kwargs, r_route, name = r
         if req.policy.validate(name):
             return True
     return False
