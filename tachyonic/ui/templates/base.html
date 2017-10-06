@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="{{SITE}}/css" />
     <link rel="stylesheet" href="{{STATIC}}/custom.css" />
     {% if CUSTOM_LOGO %}
-    <link rel="icon" href="{{SITE}}/image/{{THEME_DOMAIN}}/logo">
+    <link rel="icon" href="{{SITE}}/image/logo/{{THEME_DOMAIN}}">
     {% else %}
     <link rel="icon" href="{{STATIC}}/tachyonic.ui/images/tachyon-sm.png">
     {% endif %}
@@ -56,7 +56,7 @@ $( document ).ready(function() {
         <div class="container">
             <div class="navbar-header">
                 {% if CUSTOM_LOGO %}
-                <a href="#" class="navbar-left pull-left"><img src="{{SITE}}/image/{{THEME_DOMAIN}}/logo" height="50px" id="nav_logo"></a>
+                <a href="#" class="navbar-left pull-left"><img src="{{SITE}}/image/logo/{{THEME_DOMAIN}}" height="50px" id="nav_logo"></a>
                 {% else %}
                 <a href="#" class="navbar-left pull-left"><img src="{{STATIC}}/tachyonic.ui/images/tachyon-sm.png" height="50px" id="nav_logo"></a>
                 {% endif %}

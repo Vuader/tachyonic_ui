@@ -30,7 +30,7 @@ menu.admin.add('/System/Themes','/themes','themes:admin')
 class Themes(object):
     def __init__(self):
         router.add(const.HTTP_GET, '/image/{image}', self.images)
-        router.add(const.HTTP_GET, '/image/{theme_id}/{image}', self.images)
+        router.add(const.HTTP_GET, '/image/{image}/{theme_id}', self.images)
         router.add(const.HTTP_GET, '/css', self.get)
         router.add(const.HTTP_GET, '/themes', self.themes, 'themes:admin')
         router.add(const.HTTP_GET, '/themes/view/{theme_id}', self.themes,
