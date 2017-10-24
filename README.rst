@@ -10,13 +10,11 @@ Quick Links
 
 * `Website <http://tachyonic.co.za>`__.
 * `Documentation <http://tachyonic-ui.readthedocs.io>`__.
-* `Join mailing list <http://tachyonic.co.za/cgi-bin/mailman/listinfo/tachyon>`__.
-* `Mail List Archives <http://tachyonic.co.za/pipermail/tachyon/>`__.
 
 Installation
 ------------
 
-Tachyon currently fully supports `CPython <https://www.python.org/downloads/>`__ 2.7.
+Tachyon currently fully supports `CPython <https://www.python.org/downloads/>`__ 3.6.
 
 Source Code
 -----------
