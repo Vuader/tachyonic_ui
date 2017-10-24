@@ -52,7 +52,7 @@
     <div style="width:100%;clear:both;"></div>
 {% endif %}
 
-{% if create_url and config.getboolean('create',True) %}
+{% if create_url and config.get_boolean('create',True) %}
     <button class="btn btn-primary" data-url="{{ create_url }}" data-name="{{ title }}">Create</button>
 {% endif %}
 {% if save_url %}
@@ -61,7 +61,7 @@
 {% if created_url %}
     <input type="submit" class="btn btn-primary" value="Create" onclick="link(getElementById('tview'));">
 {% endif %}
-{% if edit_url and config.getboolean('update',True) %}
+{% if edit_url and config.get_boolean('update',True) %}
     <button class="btn btn-warning" data-url="{{ edit_url }}" data-name="{{ title }}">Edit</button>
 {% endif %}
 {% if delete_url %}

@@ -8,7 +8,7 @@ Information describing the project.
 package = 'tachyonic.ui'
 project = "Tachyonic UI"
 project_no_spaces = project.replace(' ', '')
-version = '1.0.0'
+version = '2.0.0'
 description = 'Tachyonic UI'
 authors = ['Christiaan Frans Rademan', 'Allan Swanepoel', 'Dave Kruger']
 authors_string = ', '.join(authors)
