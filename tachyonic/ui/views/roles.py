@@ -59,7 +59,7 @@ class Roles(object):
             if return_format == "select2":
                 api = Client(req.context['restapi'])
                 headers, response = api.execute(
-                    const.HTTP_GET, "/v1/roles/")
+                    const.HTTP_GET, "/v1/roles")
                 result = []
                 for r in response:
                     result.append({'id': r['id'], 'text': r['name']})
