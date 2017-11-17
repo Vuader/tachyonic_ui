@@ -39,24 +39,12 @@ class Tenant(object):
         if req.context['login'] is True:
             api = Client(req.context['restapi'])
             server_headers, response = api.execute(const.HTTP_GET, '/v1/tenant')
-            if 'id' in response:
-                dom = Dom()
-                script = dom.create_element('script')
-                name = response['name']
-                js = "document.getElementById('open_tenant')"
-                js += ".value = '%s';" % name
-                js += "tenant_selected = true;"
-                script.append(js)
 
-            form = TenantModel(response, validate=False,
-                               readonly=True, cols=2)
-            tenant = dom.create_element('form')
-            tenant.set_attribute('onsubmit', 'onsubmit="return false;"')
-            tenant.append(form)
             if req.is_ajax():
-                return dom.get()
+                t = jinja.get_template('tachyonic.ui/view_account.html')
+                return t.render(title="Account", content=response)
             else:
                 t = jinja.get_template('tachyonic.ui/ajax_wrapper.html')
-                return t.render(title="View Account", content=dom.get())
+                return t.render(title="Account", content=response)
         else:
             resp.redirect('/')
