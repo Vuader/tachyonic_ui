@@ -4,10 +4,10 @@ from collections import OrderedDict
 
 from tachyonic import app
 from tachyonic import jinja
-from tachyonic.common import constants as const
-from tachyonic.client.middleware import Token
-from tachyonic.common import exceptions
-from tachyonic.client import Client
+from tachyonic.neutrino import constants as const
+from tachyonic.neutrino import exceptions
+from tachyonic.neutrino.middleware import Token
+from tachyonic.neutrino import Client
 
 from tachyonic.ui import html_assets
 from tachyonic.ui.auth import clear_session

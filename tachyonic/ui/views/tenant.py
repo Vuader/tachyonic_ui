@@ -5,7 +5,7 @@ from tachyonic import router
 from tachyonic import jinja
 from tachyonic.neutrino import constants as const
 from tachyonic.neutrino.web.dom import Dom
-from tachyonic.client import Client
+from tachyonic.neutrino import Client
 
 from tachyonic.api.models.tenants import Tenant as TenantModel
 from tachyonic.ui import menu

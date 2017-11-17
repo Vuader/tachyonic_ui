@@ -4,15 +4,15 @@ from collections import OrderedDict
 from tachyonic import jinja
 from tachyonic import app
 from tachyonic import router
-from tachyonic.common import constants as const
-from tachyonic.common import exceptions
-from tachyonic.client import Client
+from tachyonic.neutrino import constants as const
+from tachyonic.neutrino import exceptions
+from tachyonic.neutrino import Client
 
 from tachyonic.ui.views import ui
 from tachyonic.ui.views.datatable import datatable
 from tachyonic.ui import menu
-from tachyonic.api.models.users import User as UserModel
 from tachyonic.ui.views.select import select
+from tachyonic.api.models.users import User as UserModel
 
 log = logging.getLogger(__name__)
 

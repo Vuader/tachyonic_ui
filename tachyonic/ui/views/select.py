@@ -5,7 +5,7 @@ from tachyonic import app
 from tachyonic import router
 from tachyonic.neutrino.web.dom import Dom
 from tachyonic.neutrino import constants as const
-from tachyonic.client import Client
+from tachyonic.neutrino import Client
 
 log = logging.getLogger(__name__)
 

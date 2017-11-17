@@ -4,8 +4,8 @@ from tachyonic import app
 from tachyonic import router
 from tachyonic.neutrino import constants as const
 from tachyonic.neutrino.web.dom import Dom
-from tachyonic.client import Client
-from tachyonic.common.timer import timer as nfw_timer
+from tachyonic.neutrino import Client
+from tachyonic.neutrino.timer import timer as nfw_timer
 
 from tachyonic.api.models.tenants import Tenant as TenantModel
 
