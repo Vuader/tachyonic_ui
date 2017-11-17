@@ -4,14 +4,14 @@ from collections import OrderedDict
 
 from tachyonic import app
 from tachyonic import router
-from tachyonic.common import constants as const
-from tachyonic.common import exceptions
-from tachyonic.client import Client
+from tachyonic.neutrino import constants as const
+from tachyonic.neutrino import exceptions
+from tachyonic.neutrino import Client
+from tachyonic.api.models.roles import Role as RoleModel
 
 from tachyonic.ui.views import ui
 from tachyonic.ui.views.datatable import datatable
 from tachyonic.ui import menu
-from tachyonic.api.models.roles import Role as RoleModel
 
 log = logging.getLogger(__name__)
 
