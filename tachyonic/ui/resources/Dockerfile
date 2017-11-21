@@ -16,30 +16,20 @@ RUN apt-get clean
 RUN pip3 install mod-wsgi
 RUN echo 'LoadModule wsgi_module "/usr/local/lib/python3.5/dist-packages/mod_wsgi/server/mod_wsgi-py35.cpython-35m-x86_64-linux-gnu.so"' > /etc/apache2/mods-available/wsgi.load
 RUN a2enmod wsgi
-RUN pip3 install pycurl
 
 WORKDIR /root
 ADD https://api.github.com/repos/TachyonicProject/tachyonic/git/refs/heads/development /root/tachyonic.json
 RUN git clone https://github.com/TachyonicProject/tachyonic.git
-#ADD https://api.github.com/repos/TachyonicProject/tachyonic_common/git/refs/heads/development /root/tachyonic_common.json
-#RUN git clone https://github.com/TachyonicProject/tachyonic_common.git
 ADD https://api.github.com/repos/TachyonicProject/tachyonic_neutrino/git/refs/heads/development /root/tachyonic_neutrino.json
 RUN git clone -b development https://github.com/TachyonicProject/tachyonic_neutrino.git
-#ADD https://api.github.com/repos/TachyonicProject/tachyonic_client/git/refs/heads/development /root/tachyonic_client.json
-#RUN git clone https://github.com/TachyonicProject/tachyonic_client.git
 ADD https://api.github.com/repos/TachyonicProject/tachyonic_api/git/refs/heads/development /root/tachyonic_api.json
 RUN git clone -b development https://github.com/TachyonicProject/tachyonic_api.git
 ADD https://api.github.com/repos/TachyonicProject/tachyonic_ui/git/refs/heads/development /root/tachyonic_ui.json
 RUN git clone https://github.com/TachyonicProject/tachyonic_ui.git
 WORKDIR /root/tachyonic
 RUN pip3 install .
-#WORKDIR /root/tachyonic_common
-# At the time of this writing requirements.txt is ignored by setup.py
-#RUN pip3 install -r requirements.txt .
 WORKDIR /root/tachyonic_neutrino
 RUN pip3 install .
-#WORKDIR /root/tachyonic_client
-#RUN pip3 install .
 WORKDIR /root/tachyonic_api
 RUN pip3 install -r requirements.txt .
 WORKDIR /root/tachyonic_ui
