@@ -31,7 +31,7 @@ RUN pip3 install .
 WORKDIR /root/tachyonic_neutrino
 RUN pip3 install .
 WORKDIR /root/tachyonic_api
-RUN pip3 install -r requirements.txt .
+RUN pip3 install .
 WORKDIR /root/tachyonic_ui
 RUN pip3 install .
 WORKDIR /var/www
