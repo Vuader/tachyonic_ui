@@ -6,7 +6,7 @@ from tachyonic import app
 from tachyonic import jinja
 from tachyonic.neutrino import constants as const
 from tachyonic.neutrino import exceptions
-from tachyonic.neutrino.middleware import Token
+from tachyonic.neutrino.middleware.token import Token
 from tachyonic.neutrino import Client
 
 from tachyonic.ui import html_assets
