@@ -3,6 +3,7 @@ import pytest
 import requests
 import re
 import json
+from functions import get_form_value
 
 parametrize = pytest.mark.parametrize
 
@@ -10,17 +11,6 @@ app = 'http://localhost/ui'
 dt = (app + '/dt?api=/v1/%s&fields=id=id%s&order[0][column]=%s'
             '&order[0][dir]=desc&length=1&search[value]=%s')
 
-def get_form_value(name, text):
-    id = None
-    match = re.search(' id="%s".*?value="([^"]+)' % (name,), text)
-    # Order of id and value is not always the same
-    if match is not None:
-        id = match.group(1)
-    else:
-        match = re.search('value="([^"]+).*? id="%s" ' % (name,), text)
-        if match is not None:
-            id = match.group(1)
-    return(id)
 
 def test_login_pass():
     r = requests.post(app + "/login",
