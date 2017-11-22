@@ -6,7 +6,7 @@ from tachyonic import app
 from tachyonic import router
 from tachyonic.neutrino import constants as const
 from tachyonic.neutrino.timer import timer as nfw_timer
-from tachyonic.neutrino.response import response_io_stream
+from tachyonic.neutrino.wsgi.response import response_io_stream
 
 log = logging.getLogger(__name__)
 
