@@ -1,11 +1,11 @@
 import logging
 from collections import OrderedDict
-import json
 
 from tachyonic import jinja
 from tachyonic.neutrino.web.bootstrap3.menu import Menu as NfwMenu
 
 log = logging.getLogger(__name__)
+
 
 def render_menus(req):
     jinja.request['MENU'] = admin.render(req.app,
@@ -19,13 +19,17 @@ def render_menus(req):
                                                      True)
 
 
-class Menu():
+class Menu:
+    """
+    Class Menu
+    Used to generate Menu objects to add items
+    to the Tachyonic Bootstrap Menu
+    """
     def __init__(self):
         self.items = []
 
     def add(self, item, link, view):
         self.items.append((item, link, view))
-
 
     def render(self, app, policy, service=False):
         root = NfwMenu()
@@ -61,29 +65,29 @@ class Menu():
                 if service is True:
                     onclick = "return service(this);"
                     menu.add_link(items['_name'], "%s%s" % (app, items['_link']),
-                                 onclick=onclick)
+                                  onclick=onclick)
                 else:
                     onclick = "return admin(this);"
                     menu.add_link(items['_name'], "%s%s" % (app, items['_link']),
                                   onclick=onclick)
             else:
                 for i in items:
-                        if ('_link' not in items[i] and '_view' not in items[i] and
-                                '_name' not in items[i]):
-                            if i not in subs:
-                                sub = NfwMenu()
-                                subs[i] = sub
-                            else:
-                                sub = subs[i]
-
-                            if submenu is False:
-                                menu.add_dropdown(i, sub)
-                            else:
-                                menu.add_submenu(i, sub)
+                    if ('_link' not in items[i] and '_view' not in items[i] and
+                        '_name' not in items[i]):
+                        if i not in subs:
+                            sub = NfwMenu()
+                            subs[i] = sub
                         else:
-                            sub = menu
+                            sub = subs[i]
 
-                        _menu(items[i], sub, submenu=True)
+                        if submenu is False:
+                            menu.add_dropdown(i, sub)
+                        else:
+                            menu.add_submenu(i, sub)
+                    else:
+                        sub = menu
+
+                    _menu(items[i], sub, submenu=True)
 
         _menu(menu_items, root, submenu=False)
 
@@ -91,7 +95,7 @@ class Menu():
             return None
         else:
             return root
-            
+
 
 admin = Menu()
 accounts = Menu()
