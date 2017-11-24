@@ -1,5 +1,4 @@
 import logging
-from collections import OrderedDict
 
 from tachyonic import jinja
 
@@ -7,6 +6,15 @@ log = logging.getLogger(__name__)
 
 
 def authenticated(req, auth):
+    """
+    Function used by Tachyonic ui login method
+    to update the session and context in the
+    request once user is authenticated
+
+    :param req: Request object
+    :param auth: Dictionary returned by the
+                 login/authenticate method
+    """
     if req.session.get('token') is not None:
         jinja.request['LOGIN'] = True
         req.context['roles'] = []
@@ -14,6 +22,7 @@ def authenticated(req, auth):
         req.context['domains'] = []
         jinja.request['USERNAME'] = auth['username']
         jinja.request['EMAIL'] = auth['email']
+        # In case any of these have changed, we update
         if 'token' in req.session:
             req.session['token'] = req.session['token']
         if 'domain' in req.session:
@@ -34,6 +43,13 @@ def authenticated(req, auth):
 
 
 def clear_session(req):
+    """
+    Function used by Tachyonic ui to clear all
+    session and context values in the request
+    object in the case where login was unsuccessful
+
+    :param req: Request object
+    """
     req.session.clear()
     req.context['login'] = False
     req.context['domain_admin'] = False
