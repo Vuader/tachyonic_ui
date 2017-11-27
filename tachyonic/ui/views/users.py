@@ -173,7 +173,7 @@ class User(object):
                 headers, response = api.execute(const.HTTP_POST, "/v1/user", form)
                 if 'id' in response:
                     id = response['id']
-                    self.view(req, resp, user_id=id)
+                    self.edit(req, resp, user_id=id)
             except exceptions.HTTPBadRequest as e:
                 form = UserModel(req.post, validate=False, cols=2)
                 ui.create(req, resp, content=form, title='Create User', error=[e])
