@@ -44,8 +44,8 @@ def authenticated(req, auth):
 
 def clear_session(req):
     """
-    Function used by Tachyonic ui to clear all
-    session and context values in the request
+    Function used by Tachyonic ui and middleware to
+    clear all session and context values in the request
     object in the case where login was unsuccessful
 
     :param req: Request object
