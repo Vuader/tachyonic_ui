@@ -67,6 +67,7 @@ crud_params = [
     ('role', 'name', {}, 'create'),
     ('domain', 'name', {}, 'create'),
     ('tenant', 'name', {'enabled': 'on'}, 'create'),
+    ('user', 'user_id', {'role': 'unittest'}, 'assign'),
     ('user', 'username', {'password': 'Password1'}, 'edit'),
     ('role', 'name', {}, 'edit'),
     ('domain', 'name', {}, 'edit'),
@@ -87,6 +88,11 @@ def test_crud(tachyonic, model, field, obj, action):
     #First prepare the request:
     if action == 'create':
         obj[field] = "unittest"
+        req = 'POST'
+    elif action == 'assign':
+        action = 'edit'
+        obj[field] = ids['user'][1:]
+        obj['assign_domain_id'] = ids['domain'][1:]
         req = 'POST'
     elif action == 'edit':
         obj[field] = "unittestmodfd"
