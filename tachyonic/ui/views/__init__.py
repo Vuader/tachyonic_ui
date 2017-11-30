@@ -2,7 +2,6 @@ from . import datatable
 from . import select
 from . import ui
 from . import messaging
-from . import assignments
 from . import users
 from . import roles
 from . import domains

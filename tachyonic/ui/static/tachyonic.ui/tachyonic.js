@@ -142,7 +142,7 @@ function clear_assign() {
   * Delete role used by users
   */
 function delete_role(domain,tenant_id,role) {
-    document.getElementById('domain').value = domain;
+    document.getElementById('assign_domain_id').value = domain;
     if (tenant_id == 'None') {
         document.getElementById('tenant_id').value = '';
     } else {
