@@ -11,9 +11,9 @@ def authenticated(req, auth):
     to update the session and context in the
     request once user is authenticated
 
-    :param req: Request object
-    :param auth: Dictionary returned by the
-                 login/authenticate method
+    Args:
+        req (object): Request Object (tachyonic.neutrino.wsgi.request.Request).
+        auth (dict): Dictionary returned by the login/authenticate method.
     """
     if req.session.get('token') is not None:
         jinja.request['LOGIN'] = True

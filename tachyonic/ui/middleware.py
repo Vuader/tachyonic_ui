@@ -18,7 +18,8 @@ log = logging.getLogger(__name__)
 
 
 class Globals(object):
-    """
+    """ Class Globals.
+
     Class used by settings.cfg file for the middleware
     in the [application] section. The Globals class
     obtains the theme values to populate the
@@ -62,7 +63,8 @@ class Globals(object):
 
 
 class Auth(Token):
-    """
+    """ class Auth
+
     This child class of tachyonic.neutrino.middleware.Token
     is used by settings.cfg file for the middleware
     in the [application] section. The Auth class populates
@@ -70,8 +72,8 @@ class Auth(Token):
     as clears the session where necessary
 
     Args:
-        req (object): Request Object (tachyonic.neutrino.wsgi.request.Request)
-        resp (object): Response Object (tachyonic.neutrino.wsgi.response.Response)
+        req (object): Request Object (tachyonic.neutrino.wsgi.request.Request).
+        resp (object): Response Object (tachyonic.neutrino.wsgi.response.Response).
     """
 
     def pre(self, req, resp):

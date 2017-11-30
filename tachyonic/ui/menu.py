@@ -20,10 +20,10 @@ def render_menus(req):
 
 
 class Menu:
-    """
-    Class Menu
+    """Class Menu.
+
     Used to generate Menu objects to add items
-    to the Tachyonic Bootstrap Menu
+    to the Tachyonic Bootstrap Menu.
     """
     def __init__(self):
         self.items = []
