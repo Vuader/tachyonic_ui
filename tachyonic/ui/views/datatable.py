@@ -156,7 +156,7 @@ class DataTables(object):
         router.add(const.HTTP_POST, '/dt', self.dt, 'tachyonic:public')
 
     def dt(self, req, resp):
-        """ method dt
+        """ method dt(req, resp)
 
         Process GET and POST requests to /dt URI's by calling the API URI
         with the appropriate values for the headers X-Pager-Start, X-Pager-Limit
