@@ -152,8 +152,8 @@ class Select(object):
         api_fields = api_fields[0].split(",")
         search = req.post.get('term', None)
         api = Client(req.context['restapi'])
-        request_headers = {'X-Pager-Start': 0,
-                           'X-Pager-Limit': 25,
+        request_headers = {'X-Pager-Start': "0",
+                           'X-Pager-Limit': "25",
                            'X-Search': search}
         response_headers, result = api.execute(const.HTTP_GET, url[0],
                                                headers=request_headers)
