@@ -10,19 +10,73 @@ from tachyonic.neutrino.html.dom import Dom
 log = logging.getLogger(__name__)
 
 
+def _compile_response(result, api_fields, search, keywords_mode):
+    """ Function _compile_response
+
+    Used to generate the list of dicts that will become the
+    JSON response that jquery autocomplete expects.
+
+    Args:
+        result (list): List of dict objects received from querying the API.
+        api_fields (list): List of fields to be included in the final response.
+        search (str): The search string.
+        keywords_mode (bool): If set to True, response will only contain fields that contain the search string.
+
+    Returns:
+         List of dicts in the format that jquery autocomplete expects
+    """
+    response = []
+    for row in result:
+        record = {'id': row['id'] if 'id' in row else '',
+                  'value': []}
+        for api_field in api_fields:
+            field, name = api_field.split("=")
+            if keywords_mode:
+                if row[field] is not None:
+                    if search.lower() in row[field].lower():
+                        record['id'] = record['id']
+                        record['label'] = row[field]
+                        record['value'] = row[field]
+            else:
+                record[field] = row[field]
+                if name is not None and name != 'None':
+                    record['value'].append("%s" % row[field])
+        if type(record['value']) == list:
+            record['value'] = " ".join(record['value'])
+            record['label'] = record['value']
+        response.append(record)
+    return response
+
+
 def select(req,
            field_id,
            url=None,
            fields=None,
-           css_class=None,
-           input_field=None,
-           click_url=None,
            keywords_mode=False,
            placeholder=None,
            select=None,
            change=None,
-           source=None,
-           service=False):
+           source=None):
+    """Function select
+
+    Used for generating the HTML for an input field, as
+    well as the jquery script required for autocompletion.
+
+    Args:
+        req (object): Request Object (tachyonic.neutrino.wsgi.request.Request).
+        field_id (str): HTML id attribute of the input field.
+        url (str): the api url from which the ajax data is to be retrieved.
+        fields (OrderedDict): Mapping of API response fields to HTML attribute names
+        keywords_mode (bool): If set to True, response will only contain fields that contain the search string.
+        placeholder (str): Placeholder of the <input> field.
+        select (str): javascript to be run when item is selected.
+        change (str): javascript to be run when item is changed.
+        source (str): Alternative source to use than Tachyonic /select
+
+    Returns:
+        object of Class tachyonic.neutrino.web.dom.Dom containing the html and javasript required
+        to perform the jquery autocomplete.
+    """
     dom = Dom()
 
     i = dom.create_element('input')
@@ -70,57 +124,45 @@ def select(req,
 
 @app.resources()
 class Select(object):
+    """class Select
+
+    Adds and processes GET requests to the /select routes, which is
+    the URI used by Tachyonic input field to select Tenants.
+
+    """
     def __init__(self):
         router.add(const.HTTP_GET, '/select', self.select, 'tachyonic:public')
-        router.add(const.HTTP_POST, '/select', self.select, 'tachyonic:public')
 
     def select(self, req, resp):
+        """ method select(req, resp)
+
+        Process GET requests to /select URI's by calling the API URI
+        with the appropriate values for the headers X-Pager-Start and X-Pager-Limit.
+
+        Args:
+            req (object): Request Object (tachyonic.neutrino.wsgi.request.Request).
+            resp (object): Response Object (tachyonic.neutrino.wsgi.response.Response).
+
+        Returns:
+            JSON object used to render the contents of jquery autocomplete.
+        """
         resp.headers['Content-Type'] = const.APPLICATION_JSON
-        url = req.query.getlist('api', [ '' ])
-        api_fields = req.query.getlist('fields', [ '' ])
+        url = req.query.getlist('api', [''])
+        api_fields = req.query.getlist('fields', [''])
         api_fields = api_fields[0].split(",")
-        #search = req.query.getlist('search', [ None ])
-        search = req.post.get('term',None)
+        search = req.post.get('term', None)
         api = Client(req.context['restapi'])
-        request_headers = {}
-        request_headers['X-Pager-Start'] = 0
-        request_headers['X-Pager-Limit'] = 25
-        request_headers['X-Search'] = search
+        request_headers = {'X-Pager-Start': "0",
+                           'X-Pager-Limit': "25",
+                           'X-Search': search}
         response_headers, result = api.execute(const.HTTP_GET, url[0],
                                                headers=request_headers)
 
-        response = []
         if 'keywords_mode' in req.post:
-            for row in result:
-                # DONT USE ONE FOR.. ID could come only later...
-                for field in row:
-                    if field == 'id':
-                        id = row[field]
-                for api_field in api_fields:
-                    field, name = api_field.split("=")
-                    if row[field] is not None:
-                        if search.lower() in row[field].lower():
-                            record = {}
-                            record['id'] = id
-                            record['label'] = row[field]
-                            record['value'] = row[field]
-                            response.append(record)
-
+            keywords_mode = True
         else:
-            for row in result:
-                record = {}
-                values = []
-                for field in row:
-                    if field == 'id':
-                        record['id'] = row[field]
+            keywords_mode = False
 
-                for api_field in api_fields:
-                    field, name = api_field.split("=")
-                    record[field] = row[field]
-                    if name is not None and name != 'None':
-                        values.append("%s" % (row[field],))
-                values = " ".join(values)
-                record['value'] = values
-                record['label'] = values
-                response.append(record)
+        response = _compile_response(result, api_fields, search, keywords_mode)
+
         return json.dumps(response, indent=4)

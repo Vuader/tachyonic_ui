@@ -17,6 +17,33 @@ def datatable(req, table_id, url,
               checkbox=False, service=False,
               endpoint=None, id_field=None,
               search='', sort=''):
+    """
+    Function datatable.
+
+    Used by views to generate the HTML/javascript for a Datatable
+
+    Example Usage:
+        fields = OrderedDict([('name', 'Role'), ('description', 'Description')])
+        dt = datatable(req, 'roles', '/v1/roles', fields, view_button=True)
+
+    Args:
+        req (object): Request Object (tachyonic.neutrino.wsgi.request.Request).
+        table_id (str): html id of the table.
+        url (str): the api url from which the ajax data is to be retrieved.
+        fields (OrderedDict): dictionary of fields and their <th> to be included in the datatable.
+        width (str): width of the datatable.
+        view_button (bool): Wehther or not to include the view icon/url in the datatable.
+        checkbox (bool): Whether or not to include the a checkbox in the datatable.
+        service (bool): Whether or not to to display in the service area.
+        endpoint (str): The Tachyonic endpoint to query.
+        id_field (int): The number of the column for which the id should be obtained
+        search (str): Search string to be supplied to datatables.
+        sort (tuple): (int, str) where int is the column number, and str is order (desc/asc) to default sort on
+
+    Returns:
+        object of Class tachyonic.neutrino.web.dom.Dom containing the table html and javasript required
+        to render the jquery Datatable
+    """
     dom = Dom()
     table = dom.create_element('table')
     table.set_attribute('id', table_id)
@@ -82,7 +109,6 @@ def datatable(req, table_id, url,
         js += "]"
         js += "} );"
         res = ui.resource(req)
-        url = req.get_url()
         js += "$('#%s tbody')" % (table_id,)
         js += ".on( 'click', 'button', function () {"
         js += "var data = table.row( $(this).parents('tr') ).data();"
@@ -119,19 +145,38 @@ def datatable(req, table_id, url,
 
 @app.resources()
 class DataTables(object):
+    """class Datatables
+
+    Adds and processes requests to the /dt routes, which is
+    the URI used by all Tachyonic datatables for AJAX queries.
+
+    """
     def __init__(self):
         router.add(const.HTTP_GET, '/dt', self.dt, 'tachyonic:public')
         router.add(const.HTTP_POST, '/dt', self.dt, 'tachyonic:public')
 
     def dt(self, req, resp):
+        """ method dt(req, resp)
+
+        Process GET and POST requests to /dt URI's by calling the API URI
+        with the appropriate values for the headers X-Pager-Start, X-Pager-Limit
+        and X-Order-By.
+
+        Args:
+            req (object): Request Object (tachyonic.neutrino.wsgi.request.Request).
+            resp (object): Response Object (tachyonic.neutrino.wsgi.response.Response).
+
+        Returns:
+            JSON object used to render the contents of the Datatable.
+        """
         resp.headers['Content-Type'] = const.APPLICATION_JSON
         url = req.query.get('api')
         api_fields = req.query.getlist('fields', [''])
         api_fields = api_fields[0].split(",")
         endpoint = req.query.get('endpoint', None)
-        draw = req.query.getlist('draw', [0])
-        start = req.query.getlist('start', [0])
-        length = req.query.getlist('length', [0])
+        draw = req.query.getlist('draw', ["0"])
+        start = req.query.getlist('start', ["0"])
+        length = req.query.getlist('length', ["0"])
         search = req.query.getlist('search[value]', [None])
         order = req.query.getlist("order[0][dir]")
         column = req.query.getlist("order[0][column]")
@@ -146,9 +191,7 @@ class DataTables(object):
                     orderby = "%s %s" % (order_field, order)
                 count += 1
         api = Client(req.context['restapi'])
-        request_headers = {}
-        request_headers['X-Pager-Start'] = start[0]
-        request_headers['X-Pager-Limit'] = length[0]
+        request_headers = {'X-Pager-Start': start[0], 'X-Pager-Limit': length[0]}
         if orderby is not None:
             request_headers['X-Order-By'] = orderby
 
@@ -159,10 +202,11 @@ class DataTables(object):
                                                endpoint=endpoint)
         recordsTotal = int(response_headers.get('X-Total-Rows', 0))
         recordsFiltered = int(response_headers.get('X-Filtered-Rows', 0))
-        response = {}
-        response['draw'] = int(draw[0])
-        response['recordsTotal'] = recordsTotal
-        response['recordsFiltered'] = recordsFiltered
+        response = {
+            'draw': int(draw[0]),
+            'recordsTotal': recordsTotal,
+            'recordsFiltered': recordsFiltered
+        }
         data = []
         for row in result:
             fields = []

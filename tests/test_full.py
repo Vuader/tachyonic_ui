@@ -15,7 +15,7 @@ dt = (app + '/dt?api=/v1/%s&fields=id=id%s&order[0][column]=%s'
 def test_login_pass():
     r = requests.post(app + "/login",
                       data={'username': 'root', 'password': 'password'})
-    assert r.status_code == 200
+    assert r.status_code == 204
 
     # "'tachyonic' in r.cookies" works on regular installs,
     # but not when running in docker container on localhost.
@@ -32,6 +32,8 @@ def test_login_pass():
     assert 'tachyonic' in r.cookies
     global cookie
     cookie = r.cookies['tachyonic']
+    with open('/tmp/debug','w') as f:
+        f.write(r.text)
     assert re.search('(Username.*\n.*\n.*root)', r.text)
 
 
@@ -67,6 +69,7 @@ crud_params = [
     ('role', 'name', {}, 'create'),
     ('domain', 'name', {}, 'create'),
     ('tenant', 'name', {'enabled': 'on'}, 'create'),
+    ('user', 'user_id', {'role': 'unittest'}, 'assign'),
     ('user', 'username', {'password': 'Password1'}, 'edit'),
     ('role', 'name', {}, 'edit'),
     ('domain', 'name', {}, 'edit'),
@@ -88,6 +91,11 @@ def test_crud(tachyonic, model, field, obj, action):
     if action == 'create':
         obj[field] = "unittest"
         req = 'POST'
+    elif action == 'assign':
+        action = 'edit'
+        obj[field] = ids['user'][1:]
+        obj['assign_domain_id'] = ids['domain'][1:]
+        req = 'POST'
     elif action == 'edit':
         obj[field] = "unittestmodfd"
         obj['id'] = ids[model][1:]
@@ -100,7 +108,7 @@ def test_crud(tachyonic, model, field, obj, action):
 
     # Then perform the request
     tachyonic.request(req, '%ss/%s%s' % (model, action, ids[model]), obj)
-    assert tachyonic.response.status_code == 200
+    assert tachyonic.response.status_code < 227
 
     # Lastly some more checks to see if we got what we wanted
     if action == 'create':
@@ -110,10 +118,10 @@ def test_crud(tachyonic, model, field, obj, action):
         match = re.search(obj[field], tachyonic.response.text)
         assert match is not None
     elif action == 'edit':
-        # When we POST/save on edit, response is 200 empty
+        # When we POST/save on edit, response is 204 empty
         # and leaves us on the edit form.
         # To see if our change really had effect (in addition
-        # to 200, we look for it in the datatables list
+        # to 204, we look for it in the datatables list
         tachyonic.dt('GET', model + 's', search='unittest')
         assert tachyonic.response.status_code == 200
         assert json.loads(tachyonic.response.text)

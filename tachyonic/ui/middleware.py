@@ -18,6 +18,14 @@ log = logging.getLogger(__name__)
 
 
 class Globals(object):
+    """ Class Globals.
+
+    Class used by settings.cfg file for the middleware
+    in the [application] section. The Globals class
+    obtains the theme values to populate the
+    request context and jinja globals and request
+    """
+
     def __init__(self):
         self.config = app.config
         self.ui_config = app.config.get('ui')
@@ -29,10 +37,10 @@ class Globals(object):
             if app.config.get("tachyon").get("restapi") is None:
                 raise exceptions.HTTPInternalServerError('settings.cfg',
                                                          'Missing [tachyon] restapi')
-            req.context['restapi'] = app.config.get("tachyon").get("restapi","http://127.0.0.1")
+            req.context['restapi'] = app.config.get("tachyon").get("restapi", "http://127.0.0.1")
             api = Client(req.context['restapi'])
             headers, theme = api.execute(const.HTTP_GET, "/v1/theme/%s/single" %
-                                          (req.get_host(),))
+                                         (req.get_host(),))
             if 'background' in theme:
                 req.context['custom_background'] = theme['background']
             else:
@@ -55,6 +63,19 @@ class Globals(object):
 
 
 class Auth(Token):
+    """ class Auth
+
+    This child class of tachyonic.neutrino.middleware.Token
+    is used by settings.cfg file for the middleware
+    in the [application] section. The Auth class populates
+    the jinja.request object and request context, as well
+    as clears the session where necessary
+
+    Args:
+        req (object): Request Object (tachyonic.neutrino.wsgi.request.Request).
+        resp (object): Response Object (tachyonic.neutrino.wsgi.response.Response).
+    """
+
     def pre(self, req, resp):
         try:
             self.interface = 'ui'
