@@ -16,11 +16,19 @@ from tachyonic.ui.views.select import select
 
 log = logging.getLogger(__name__)
 
-menu.admin.add('/Accounts/Users','/users','users:view')
+menu.admin.add('/Accounts/Users', '/users', 'users:view')
 
 
 @app.resources()
 class User(object):
+    """
+    class User
+
+    Adds and process requests to /users... routes.
+
+    In order to log in and make use of the Tachyonic Framework, users require
+    accounts. This class is used create, update, and delete user accounts.
+    """
     def __init__(self):
         # VIEW USERS
         router.add(const.HTTP_GET,
@@ -53,6 +61,16 @@ class User(object):
                    'users:admin')
 
     def view(self, req, resp, user_id=None):
+        """Method view(req, resp, user_id=None)
+
+        Used to process requests to /users and /users/view/{user_id} in order
+        to view users or a particular user.
+
+        Args:
+            req (object): Request Object (tachyonic.neutrino.wsgi.request.Request).
+            resp (object): Response Object (tachyonic.neutrino.wsgi.response.Response).
+            user_id (str): UUID of a particular user to be viewed.
+        """
         if user_id is None:
             fields = OrderedDict()
             fields['username'] = 'Username'
@@ -75,6 +93,14 @@ class User(object):
                     view_form=True, extra=extra, config=app.config.get('users'))
 
     def assign(self, req, resp):
+        """ method assign(req, resp).
+
+        Used by method edit() in order to assign a role to a user account.
+
+        Args:
+            req (object): Request Object (tachyonic.neutrino.wsgi.request.Request).
+            resp (object): Response Object (tachyonic.neutrino.wsgi.response.Response).
+        """
         api = Client(req.context['restapi'])
         user_id = req.post.get('user_id')
         role = req.post.get('role')
@@ -90,10 +116,10 @@ class User(object):
 
         url = "/v1/user/role"
         url += "/%s" % user_id
-        url += "/%s" % role
-        url += "/%s" % domain
 
         if role is not None and domain is not None:
+            url += "/%s" % role
+            url += "/%s" % domain
             if tenant_id is not None:
                 url += "/%s" % tenant_id
             if remove == "True":
@@ -102,6 +128,15 @@ class User(object):
                 headers, assignments = api.execute(const.HTTP_POST, url)
 
     def edit(self, req, resp, user_id=None):
+        """Method edit(req, resp, user_id=None)
+
+        Used to process requests to /users/edit/{user_id} in order to modify users.
+
+        Args:
+            req (object): Request Object (tachyonic.neutrino.wsgi.request.Request).
+            resp (object): Response Object (tachyonic.neutrino.wsgi.response.Response).
+            user_id (str): UUID of the particular user to be modifed.
+        """
         save = req.post.get('save', False)
         if req.method == const.HTTP_POST and save is not False:
             form = UserModel(req.post, validate=True, readonly=True, cols=2)
@@ -114,33 +149,17 @@ class User(object):
             api_fields['id'] = None
             api_fields['name'] = "Name"
             api_fields['domain_id'] = None
-            select_js = """
-            if (ui.item === null) {
-                document.getElementById("tenant_assignment").value = "";
-                document.getElementById("tenant_id").value = "";
-                document.getElementById("domain").value = "";
-            }
-            else {
-                var id = ui.item.id;
-                var domain_id = ui.item.domain_id;
-                document.getElementById("assign_tenant_id").value = id;
-                document.getElementById("assign_domain_id").value = domain_id;
-            }
-            """
-            change_js = """
-            if (ui.item === null) {
-                document.getElementById("tenant_id").value = "";
-                document.getElementById("tenant_assignment").value = "";
-                document.getElementById("domain").value = "";
-            }
-            """
-
+            t = jinja.get_template('tachyonic.ui/select.js')
+            select_js = t.render()
+            change_js = select_js
+            t = jinja.get_template('tachyonic.ui/select-else.js')
+            select_js += t.render()
             tenants = select(req, 'tenant_assignment', '/v1/search',
-                      api_fields,
-                      select=select_js,
-                      change=change_js,
-                      placeholder="Tenant Name",
-                      keywords_mode=False)
+                             api_fields,
+                             select=select_js,
+                             change=change_js,
+                             placeholder="Tenant Name",
+                             keywords_mode=False)
             api = Client(req.context['restapi'])
             headers, assignments = api.execute(const.HTTP_GET, "/v1/user/roles/%s" % (user_id,))
             headers, response = api.execute(const.HTTP_GET, "/v1/user/%s" % (user_id,))
@@ -154,7 +173,6 @@ class User(object):
                 for a in domains:
                     all_domains.append(a)
 
-
             form = UserModel(response, validate=False, cols=2)
             t = jinja.get_template('tachyonic.ui/assignments.html')
             extra = t.render(tenants=tenants,
@@ -166,14 +184,22 @@ class User(object):
                     extra=extra)
 
     def create(self, req, resp):
+        """Method create(req, resp)
+
+        Used to process requests to /users/create in order to create new users.
+
+        Args:
+            req (object): Request Object (tachyonic.neutrino.wsgi.request.Request).
+            resp (object): Response Object (tachyonic.neutrino.wsgi.response.Response).
+        """
         if req.method == const.HTTP_POST:
             try:
                 form = UserModel(req.post, validate=True, cols=2)
                 api = Client(req.context['restapi'])
                 headers, response = api.execute(const.HTTP_POST, "/v1/user", form)
                 if 'id' in response:
-                    id = response['id']
-                    self.edit(req, resp, user_id=id)
+                    user_id = response['id']
+                    self.edit(req, resp, user_id=user_id)
             except exceptions.HTTPBadRequest as e:
                 form = UserModel(req.post, validate=False, cols=2)
                 ui.create(req, resp, content=form, title='Create User', error=[e])
@@ -182,6 +208,15 @@ class User(object):
             ui.create(req, resp, content=form, title='Create User')
 
     def delete(self, req, resp, user_id=None):
+        """Method delete(req, resp, user_id=None)
+
+        Used to process requests to /users/delete/{user_id} in order to delete users.
+
+        Args:
+            req (object): Request Object (tachyonic.neutrino.wsgi.request.Request).
+            resp (object): Response Object (tachyonic.neutrino.wsgi.response.Response).
+            user_id (str): UUID of the particular user to be deleted.
+        """
         api = Client(req.context['restapi'])
         headers, response = api.execute(const.HTTP_DELETE, "/v1/user/%s" % (user_id,))
         self.view(req, resp)
