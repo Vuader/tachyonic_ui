@@ -2,9 +2,9 @@ import logging
 import json
 import time
 
-from tachyonic import app
-from tachyonic import router
 from tachyonic.neutrino import constants as const
+from tachyonic.neutrino.wsgi import app
+from tachyonic.neutrino.wsgi import router
 from tachyonic.neutrino.timer import timer
 from tachyonic.neutrino.wsgi.response import response_io_stream
 

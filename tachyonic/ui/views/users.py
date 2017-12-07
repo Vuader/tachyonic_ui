@@ -1,12 +1,13 @@
 import logging
 from collections import OrderedDict
 
-from tachyonic import jinja
-from tachyonic import app
-from tachyonic import router
 from tachyonic.neutrino import constants as const
 from tachyonic.neutrino import exceptions
-from tachyonic.neutrino import Client
+from tachyonic.neutrino.client import Client
+from tachyonic.neutrino.wsgi import jinja
+from tachyonic.neutrino.wsgi import app
+from tachyonic.neutrino.wsgi import router
+
 from tachyonic.api.models.users import User as UserModel
 
 from tachyonic.ui.views import ui

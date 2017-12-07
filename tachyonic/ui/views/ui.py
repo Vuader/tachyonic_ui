@@ -1,13 +1,13 @@
 import logging
 import re
 
-from tachyonic import app
-from tachyonic import router
-from tachyonic import jinja
 from tachyonic.neutrino import exceptions as exceptions
 from tachyonic.neutrino import constants as const
-from tachyonic.neutrino import Client
-from tachyonic.neutrino.exceptions import ClientError
+from tachyonic.neutrino.config import Config
+from tachyonic.neutrino.wsgi import app
+from tachyonic.neutrino.wsgi import router
+from tachyonic.neutrino.wsgi import jinja
+from tachyonic.neutrino.client import Client
 
 from tachyonic.ui.auth import clear_session
 from tachyonic.ui.auth import authenticated
@@ -236,7 +236,7 @@ class Tachyonic(object):
                 authenticated(req, auth)
                 jinja.request['DOMAINS'] = req.context['domains']
                 render_menus(req)
-            except ClientError as e:
+            except exceptions.ClientError as e:
                 if e.status == const.HTTP_500:
                     clear_session(req)
                     error.append("RESTAPI Server Internal Error")

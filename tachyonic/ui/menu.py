@@ -1,8 +1,8 @@
 import logging
 from collections import OrderedDict
 
-from tachyonic import jinja
-from tachyonic.neutrino.web.bootstrap3.menu import Menu as NfwMenu
+from tachyonic.neutrino.wsgi import jinja
+from tachyonic.neutrino.html.bootstrap3.menu import Menu as NfwMenu
 
 log = logging.getLogger(__name__)
 

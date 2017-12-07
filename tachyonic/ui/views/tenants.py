@@ -1,15 +1,16 @@
 import logging
 from collections import OrderedDict
 
-from tachyonic import app
-from tachyonic import router
 from tachyonic.neutrino import constants as const
 from tachyonic.neutrino import exceptions
-from tachyonic.neutrino import Client
+from tachyonic.neutrino.wsgi import app
+from tachyonic.neutrino.wsgi import router
+from tachyonic.neutrino.client import Client
 
 from tachyonic.ui.views import ui
 from tachyonic.ui.views.datatable import datatable
 from tachyonic.ui import menu
+
 from tachyonic.api.models.tenants import Tenant as TenantModel
 
 log = logging.getLogger(__name__)

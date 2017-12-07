@@ -1,10 +1,10 @@
 import logging
 
-from tachyonic import app
-from tachyonic import router
 from tachyonic.neutrino import constants as const
-from tachyonic.neutrino.web.dom import Dom
-from tachyonic.neutrino import Client
+from tachyonic.neutrino.wsgi import app
+from tachyonic.neutrino.wsgi import router
+from tachyonic.neutrino.html.dom import Dom
+from tachyonic.neutrino.client import Client
 from tachyonic.neutrino.timer import timer
 
 from tachyonic.api.models.tenants import Tenant as TenantModel

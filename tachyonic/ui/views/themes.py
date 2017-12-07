@@ -5,12 +5,13 @@ from copy import deepcopy
 import base64
 from datetime import datetime
 
-from tachyonic import app
-from tachyonic import router
-from tachyonic import jinja
+from pytz import timezone
 from tachyonic.neutrino import constants as const
 from tachyonic.neutrino import exceptions
-from tachyonic.neutrino import Client
+from tachyonic.neutrino.wsgi import app
+from tachyonic.neutrino.wsgi import router
+from tachyonic.neutrino.wsgi import jinja
+from tachyonic.neutrino.client import Client
 from tachyonic.api.models.themes import Theme as ThemeModel
 
 from tachyonic.ui.views import ui

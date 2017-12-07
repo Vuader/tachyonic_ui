@@ -1,6 +1,6 @@
 import logging
 
-from tachyonic import jinja
+from tachyonic.neutrino.wsgi import jinja
 
 log = logging.getLogger(__name__)
 
