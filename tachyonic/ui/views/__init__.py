@@ -11,5 +11,3 @@ from . import search
 from . import themes
 
 from .ui import resource
-from .ui import route
-
