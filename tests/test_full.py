@@ -15,7 +15,7 @@ dt = (app + '/dt?api=/v1/%s&fields=id=id%s&order[0][column]=%s'
 def test_login_pass():
     r = requests.post(app + "/login",
                       data={'username': 'root', 'password': 'password'})
-    assert r.status_code == 204
+    assert r.status_code == 200
 
     # "'tachyonic' in r.cookies" works on regular installs,
     # but not when running in docker container on localhost.
